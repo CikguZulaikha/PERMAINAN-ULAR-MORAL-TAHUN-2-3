@@ -1,916 +1,1266 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ular Wira Moral - Permainan Retro KSSR</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #030611;
-            --arcade-green: #20e3a2;
-            --arcade-cyan: #00f0ff;
-            --arcade-yellow: #ffea00;
-            --arcade-red: #ff2a6d;
-            --arcade-purple: #8a2be2;
-            --panel-bg: rgba(6, 11, 25, 0.96);
-            --card-border: #00f0ff;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Ular Wira Moral - Permainan Retro Arcade</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    body {
+      font-family: 'Fredoka', sans-serif;
+      background-color: #0d0e15;
+      color: #fff;
+      touch-action: manipulation;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-            -webkit-user-select: none;
-        }
+    .font-arcade {
+      font-family: 'Press Start 2P', monospace;
+    }
 
-        body {
-            background-color: var(--bg-color);
-            background-image: 
-                radial-gradient(circle at 50% 50%, #0d1531 0%, #02040a 100%),
-                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-            background-size: 100% 100%, 20px 20px, 20px 20px;
-            color: #fff;
-            font-family: 'Press Start 2P', cursive;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            overflow-x: hidden;
-            padding: 10px;
-        }
+    /* CRT Arcade Screen Effect */
+    .crt::before {
+      content: " ";
+      display: block;
+      position: absolute;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+      z-index: 10;
+      background-size: 100% 4px, 6px 100%;
+      pointer-events: none;
+    }
 
-        /* Top Header */
-        header {
-            width: 100%;
-            max-width: 480px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 12px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 2px solid var(--arcade-cyan);
-            border-radius: 8px;
-            margin-bottom: 8px;
-        }
+    /* Glowing Neon Shadows */
+    .neon-text-green {
+      text-shadow: 0 0 5px #00ff66, 0 0 10px #00ff66, 0 0 20px #00ff66;
+    }
+    .neon-text-yellow {
+      text-shadow: 0 0 5px #ffcc00, 0 0 10px #ffcc00, 0 0 20px #ffcc00;
+    }
+    .neon-text-pink {
+      text-shadow: 0 0 5px #ff007f, 0 0 10px #ff007f, 0 0 20px #ff007f;
+    }
+    
+    .arcade-card {
+      background: rgba(20, 24, 45, 0.95);
+      border: 3px solid #00f0ff;
+      border-radius: 16px;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+    }
 
-        .header-title {
-            font-size: 11px;
-            color: var(--arcade-yellow);
-        }
+    .arcade-btn {
+      transition: transform 0.1s, box-shadow 0.1s;
+      border-bottom: 5px solid rgba(0, 0, 0, 0.4);
+    }
+    .arcade-btn:active {
+      transform: translateY(3px);
+      border-bottom: 2px solid rgba(0, 0, 0, 0.4);
+    }
 
-        .audio-btn {
-            background: #111;
-            border: 1px solid var(--arcade-green);
-            color: var(--arcade-green);
-            padding: 5px 8px;
-            font-family: 'Press Start 2P', cursive;
-            font-size: 9px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
+    #canvas-container {
+      position: relative;
+      width: 100%;
+      max-width: 440px;
+      aspect-ratio: 1 / 1;
+    }
 
-        /* Main Container */
-        #game-container {
-            position: relative;
-            width: 100%;
-            max-width: 480px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background-color: #0a0c16;
+      border-radius: 8px;
+    }
 
-        .hud {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.85);
-            border: 2px solid var(--arcade-cyan);
-            border-bottom: none;
-            padding: 10px;
-            font-size: 10px;
-            color: #fff;
-            border-radius: 8px 8px 0 0;
-        }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 15px #00f0ff; }
+      50% { box-shadow: 0 0 25px #ff007f; }
+    }
+    .pulse-arcade {
+      animation: pulseGlow 3s infinite ease-in-out;
+    }
 
-        .hud span {
-            color: var(--arcade-green);
-        }
-
-        canvas {
-            background-color: #020307;
-            border: 2px solid var(--arcade-cyan);
-            display: block;
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            image-rendering: pixelated;
-            border-radius: 0 0 8px 8px;
-        }
-
-        /* Overlays */
-        .overlay {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--panel-bg);
-            border: 2px solid var(--arcade-cyan);
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            text-align: center;
-            z-index: 20;
-            max-height: 100%;
-            overflow-y: auto;
-            box-shadow: 0 0 25px rgba(0, 240, 255, 0.25);
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        h1.game-title {
-            font-size: 20px;
-            color: var(--arcade-red);
-            margin-bottom: 8px;
-            text-shadow: 2px 2px #000;
-        }
-
-        p.subtitle {
-            font-family: 'VT323', monospace;
-            font-size: 18px;
-            color: #aaa;
-            margin-bottom: 20px;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-            width: 100%;
-            max-width: 280px;
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 9px;
-            margin-bottom: 8px;
-            color: #fff;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            font-family: 'Press Start 2P', cursive;
-            font-size: 10px;
-            background: #000;
-            border: 2px solid var(--arcade-green);
-            color: #fff;
-            text-align: center;
-            outline: none;
-            border-radius: 6px;
-        }
-
-        /* UI Buttons */
-        .btn-row {
-            display: flex;
-            gap: 10px;
-            width: 100%;
-            max-width: 320px;
-            justify-content: center;
-            margin-top: 15px;
-        }
-
-        .btn {
-            background: var(--arcade-green);
-            color: #000;
-            border: none;
-            padding: 12px 16px;
-            font-family: 'Press Start 2P', cursive;
-            font-size: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 8px;
-            flex: 1;
-            box-shadow: 0 4px #0f9d6e;
-            transition: all 0.1s;
-            text-transform: uppercase;
-        }
-
-        .btn-blue {
-            background: var(--arcade-cyan);
-            box-shadow: 0 4px #00a0b0;
-        }
-
-        .btn-red {
-            background: var(--arcade-red);
-            color: #fff;
-            box-shadow: 0 4px #b01a4a;
-        }
-
-        .btn:active {
-            transform: translateY(3px);
-            box-shadow: 0 1px #000;
-        }
-
-        /* Quiz UI Card (Match Original) */
-        .quiz-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            margin-bottom: 15px;
-        }
-
-        .quiz-title-tag {
-            color: var(--arcade-yellow);
-            font-size: 10px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .badge-nilai {
-            background: #d81b60;
-            color: #fff;
-            font-family: 'VT323', monospace;
-            font-size: 14px;
-            padding: 2px 10px;
-            border-radius: 12px;
-        }
-
-        .quiz-question-box {
-            font-family: 'VT323', monospace;
-            font-size: 22px;
-            color: #fff;
-            text-align: left;
-            width: 100%;
-            margin-bottom: 15px;
-            line-height: 1.3;
-        }
-
-        .quiz-option {
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid #1e293b;
-            color: #cbd5e1;
-            padding: 12px 14px;
-            margin: 6px 0;
-            width: 100%;
-            font-family: 'VT323', monospace;
-            font-size: 20px;
-            text-align: left;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-        }
-
-        .quiz-option:hover {
-            border-color: var(--arcade-cyan);
-            color: #fff;
-        }
-
-        .quiz-option.selected-correct {
-            background: #1e1b4b;
-            border: 2px solid var(--arcade-purple);
-            color: #fff;
-        }
-
-        .quiz-option.disabled {
-            pointer-events: none;
-        }
-
-        /* Feedback Green Banner */
-        .feedback-card {
-            background: rgba(6, 78, 59, 0.4);
-            border: 2px solid var(--arcade-green);
-            border-radius: 8px;
-            padding: 12px;
-            margin-top: 10px;
-            width: 100%;
-            text-align: center;
-        }
-
-        .feedback-title {
-            color: var(--arcade-green);
-            font-size: 11px;
-            margin-bottom: 6px;
-        }
-
-        .feedback-desc {
-            font-family: 'VT323', monospace;
-            font-size: 18px;
-            color: #e2e8f0;
-            margin-bottom: 10px;
-        }
-
-        /* Stats List on Game Over */
-        .stats-list {
-            font-family: 'VT323', monospace;
-            font-size: 22px;
-            width: 100%;
-            max-width: 300px;
-            margin: 15px 0;
-            text-align: left;
-            color: #cbd5e1;
-        }
-
-        .stats-row {
-            display: flex;
-            justify-content: space-between;
-            margin: 8px 0;
-        }
-
-        .stats-row span.val {
-            color: var(--arcade-yellow);
-        }
-
-        /* Leaderboard Table */
-        .leaderboard-table {
-            width: 100%;
-            max-width: 340px;
-            border-collapse: collapse;
-            margin: 15px 0;
-            font-family: 'VT323', monospace;
-            font-size: 20px;
-        }
-
-        .leaderboard-table th {
-            color: var(--arcade-yellow);
-            border-bottom: 2px solid var(--arcade-yellow);
-            padding: 6px;
-            text-align: left;
-        }
-
-        .leaderboard-table td {
-            padding: 6px;
-            border-bottom: 1px solid #333;
-            text-align: left;
-        }
-
-        /* Mobile D-Pad Controls */
-        #dpad {
-            display: grid;
-            grid-template-columns: repeat(3, 50px);
-            grid-template-rows: repeat(3, 50px);
-            gap: 5px;
-            margin-top: 10px;
-        }
-
-        .dbtn {
-            background: #10172a;
-            border: 2px solid var(--arcade-cyan);
-            color: #fff;
-            font-size: 18px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 8px;
-            cursor: pointer;
-            touch-action: manipulation;
-        }
-
-        .dbtn:active {
-            background: var(--arcade-cyan);
-            color: #000;
-        }
-
-        #btn-up { grid-column: 2; grid-row: 1; }
-        #btn-left { grid-column: 1; grid-row: 2; }
-        #btn-right { grid-column: 3; grid-row: 2; }
-        #btn-down { grid-column: 2; grid-row: 3; }
-
-        /* Footer Copyright */
-        footer {
-            margin-top: 10px;
-            font-size: 8px;
-            color: #64748b;
-            text-align: center;
-            line-height: 1.5;
-        }
-
-        footer span {
-            color: var(--arcade-yellow);
-            font-weight: bold;
-        }
-    </style>
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #121420;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #00f0ff;
+      border-radius: 4px;
+    }
+  </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col justify-between items-center p-2 sm:p-4 crt overflow-x-hidden select-none">
 
-    <!-- Header -->
-    <header>
-        <div class="header-title">🐍 ULAR WIRA MORAL</div>
-        <button id="toggle-audio" class="audio-btn">🔊 BGM: ON</button>
-    </header>
+  <!-- Header Dashboard -->
+  <header class="w-full max-w-lg flex justify-between items-center p-3 mb-2 arcade-card z-20">
+    <div class="flex items-center space-x-2">
+      <span class="text-3xl">🐍</span>
+      <div>
+        <h1 class="text-lg sm:text-xl font-bold font-arcade tracking-wider text-yellow-400 neon-text-yellow">ULAR WIRA</h1>
+        <p class="text-[11px] text-cyan-400 font-semibold tracking-wide">PENDIDIKAN MORAL KSSR</p>
+      </div>
+    </div>
+    
+    <div class="flex items-center gap-2">
+      <button id="bgm-toggle" class="p-2 bg-indigo-900/80 hover:bg-indigo-800 border border-yellow-400 rounded-lg text-yellow-300 transition" title="BGM (Muzik Latar)">
+        <i class="fas fa-music text-lg" id="bgm-icon"></i>
+      </button>
+      <button id="sound-toggle" class="p-2 bg-indigo-900/80 hover:bg-indigo-800 border border-cyan-400 rounded-lg text-cyan-300 transition" title="SFX Kesan Bunyi">
+        <i class="fas fa-volume-up text-lg" id="sound-icon"></i>
+      </button>
+      <button id="pause-btn" class="p-2 bg-indigo-900/80 hover:bg-indigo-800 border border-cyan-400 rounded-lg text-cyan-300 transition hidden" title="Jeda">
+        <i class="fas fa-pause text-lg" id="pause-icon"></i>
+      </button>
+    </div>
+  </header>
 
-    <!-- Game Container -->
-    <div id="game-container">
-        
-        <!-- HUD -->
-        <div class="hud">
-            <div>SKOR: <span id="score-display">0</span></div>
-            <div>PEMAIN: <span id="player-display">-</span></div>
-        </div>
+  <main class="w-full max-w-lg flex flex-col items-center justify-center flex-grow z-20 relative">
 
-        <!-- Canvas Game Screen -->
-        <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <!-- SCREEN 1: Start Menu -->
+    <div id="start-screen" class="w-full arcade-card p-5 flex flex-col items-center text-center space-y-4 pulse-arcade">
+      <h2 class="text-xl sm:text-2xl font-arcade text-green-400 neon-text-green">WIRA MORAL</h2>
+      
+      <!-- Snake Canvas Preview Box -->
+      <div class="w-full max-w-[240px] aspect-square border-2 border-cyan-400 rounded-lg overflow-hidden bg-slate-950 shadow-inner my-1">
+        <canvas id="preview-canvas" class="w-full h-full block"></canvas>
+      </div>
 
-        <!-- START SCREEN -->
-        <div id="start-screen" class="overlay">
-            <h1 class="game-title" style="color: var(--arcade-yellow);">ULAR WIRA MORAL</h1>
-            <p class="subtitle">KSSR Pendidikan Moral Tahun 1-6</p>
-            
-            <div class="input-group">
-                <label for="player-name">MASUKKAN NAMA WIRA:</label>
-                <input type="text" id="player-name" placeholder="" maxlength="12" autocomplete="off">
-            </div>
+      <p class="text-xs sm:text-sm text-slate-300 max-w-sm">
+        Makan makanan untuk menjawab soalan <strong class="text-yellow-400">Pendidikan Moral KSSR</strong> dan kumpul skor tertinggi!
+      </p>
 
-            <button id="btn-start" class="btn">MULA MAIN</button>
-            <button id="btn-show-scores" class="btn btn-blue" style="margin-top: 8px;">CARTA SKOR</button>
-        </div>
+      <!-- Player Name Input (Empty by default) -->
+      <div class="w-full max-w-xs space-y-1 text-left">
+        <label for="player-name-input" class="text-xs font-semibold text-cyan-400">NAMA WIRA:</label>
+        <input type="text" id="player-name-input" maxlength="12" placeholder="Masukkan Nama Anda..." value=""
+          class="w-full px-4 py-2 bg-slate-900 border-2 border-cyan-400 rounded-lg text-yellow-300 font-bold focus:outline-none focus:border-pink-500 text-center uppercase tracking-wider text-sm">
+      </div>
 
-        <!-- QUIZ OVERLAY (Exact Match with Image 2 & 3) -->
-        <div id="quiz-screen" class="overlay hidden">
-            <div class="quiz-header">
-                <div class="quiz-title-tag">🎓 SOALAN MORAL KSSR</div>
-                <div id="quiz-badge-nilai" class="badge-nilai">Nilai Rasional</div>
-            </div>
+      <!-- Control Instructions -->
+      <div class="bg-slate-900/80 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-300 w-full max-w-xs space-y-1">
+        <p class="font-bold text-cyan-400 text-center">🎮 Kawalan:</p>
+        <p>• Papan Kekunci: <span class="text-yellow-300">Anak Panah</span> / <span class="text-yellow-300">WASD</span></p>
+        <p>• Mudah Alih: <span class="text-yellow-300">Butang Skrin</span> / <span class="text-yellow-300">Leret Canvas</span></p>
+      </div>
 
-            <div id="quiz-question" class="quiz-question-box">Soalan...</div>
-
-            <div id="quiz-options" style="width: 100%;"></div>
-
-            <!-- Green Feedback Box -->
-            <div id="quiz-feedback-box" class="feedback-card hidden">
-                <div id="feedback-title" class="feedback-title">⚡ TEPAT! +50 SKOR MORAL</div>
-                <div id="feedback-desc" class="feedback-desc">Nilai Rasional membantu kita berfikir berdasarkan alasan dan bukti yang munasabah.</div>
-                <button id="btn-continue-game" class="btn" style="width: 100%; background: var(--arcade-cyan);">TERUSKAN PERMAINAN ►</button>
-            </div>
-        </div>
-
-        <!-- GAME OVER OVERLAY (Exact Match with Image 1) -->
-        <div id="gameover-screen" class="overlay hidden">
-            <h1 class="game-title">TAMAT PERMAINAN</h1>
-            <p class="subtitle">Syabas atas usaha anda menjadi Wira Moral!</p>
-
-            <div class="stats-list">
-                <div class="stats-row">
-                    <div>Pemain:</div>
-                    <div id="go-player-name" class="val">-</div>
-                </div>
-                <div class="stats-row">
-                    <div>Jumlah Skor:</div>
-                    <div id="go-score" class="val">0</div>
-                </div>
-                <div class="stats-row">
-                    <div>Soalan Moral Dijawab Betul:</div>
-                    <div id="go-correct-count" class="val">0</div>
-                </div>
-            </div>
-
-            <div class="btn-row">
-                <button id="btn-replay" class="btn">🎮 MAIN LAGI</button>
-                <button id="btn-leaderboard-from-over" class="btn btn-blue">🏆 CARTA SKOR</button>
-            </div>
-        </div>
-
-        <!-- LEADERBOARD OVERLAY -->
-        <div id="leaderboard-screen" class="overlay hidden">
-            <h1 class="game-title" style="color: var(--arcade-yellow); font-size: 16px;">🏆 CARTA SKOR TEMPATAN</h1>
-            
-            <div style="width: 100%; max-height: 180px; overflow-y: auto;">
-                <table class="leaderboard-table">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>NAMA</th>
-                            <th>SKOR</th>
-                            <th class="admin-col hidden">PADAM</th>
-                        </tr>
-                    </thead>
-                    <tbody id="leaderboard-body"></tbody>
-                </table>
-            </div>
-
-            <div id="admin-controls-area">
-                <button id="btn-unlock-admin" style="background: none; border: none; color: #555; font-size: 9px; cursor: pointer; text-decoration: underline; margin-top: 5px;">Akses Cikgu Zulaikha</button>
-            </div>
-
-            <div id="admin-panel" class="hidden" style="margin-top: 10px; width: 100%; max-width: 280px;">
-                <button id="btn-wipe-scores" class="btn btn-red" style="font-size: 8px; padding: 6px;">PADAM SEMUA SKOR</button>
-            </div>
-
-            <button id="btn-back-to-start" class="btn" style="margin-top: 15px;">KEMBALI</button>
-        </div>
-
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row gap-3 w-full max-w-xs pt-1">
+        <button id="start-game-btn" class="arcade-btn flex-1 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-arcade text-xs sm:text-sm font-bold rounded-xl shadow-lg border-emerald-700">
+          MULA MAIN
+        </button>
+        <button id="view-leaderboard-btn" class="arcade-btn flex-1 py-3 bg-purple-600 hover:bg-purple-500 text-white font-arcade text-xs font-bold rounded-xl shadow-lg border-purple-800">
+          CARTA SKOR
+        </button>
+      </div>
     </div>
 
-    <!-- D-Pad Mobile Controls -->
-    <div id="dpad">
-        <div class="dbtn" id="btn-up">▲</div>
-        <div class="dbtn" id="btn-left">◄</div>
-        <div class="dbtn" id="btn-right">►</div>
-        <div class="dbtn" id="btn-down">▼</div>
+    <!-- SCREEN 2: Game Screen -->
+    <div id="game-screen" class="w-full flex flex-col items-center hidden">
+      <!-- HUD Dashboard -->
+      <div class="w-full bg-slate-900/90 border-2 border-cyan-500/50 rounded-t-xl p-2 sm:p-3 flex justify-between items-center text-xs sm:text-sm font-bold text-slate-200">
+        <div>
+          <span class="text-cyan-400">SKOR:</span> <span id="score-display" class="text-yellow-400 font-arcade">0</span>
+        </div>
+        <div>
+          <span class="text-pink-400">SOALAN BETUL:</span> <span id="moral-stars-display" class="text-pink-300 font-arcade">0</span>
+        </div>
+        <div>
+          <span class="text-red-400">NYAWA:</span> <span id="lives-display" class="text-red-500">❤️❤️❤️</span>
+        </div>
+      </div>
+
+      <!-- Main Game Canvas Container -->
+      <div id="canvas-container" class="border-2 border-t-0 border-cyan-400 bg-slate-950 shadow-2xl overflow-hidden rounded-b-xl">
+        <canvas id="game-canvas" class="w-full h-full block"></canvas>
+      </div>
+
+      <!-- Mobile D-Pad Touch Controls -->
+      <div id="touch-controls" class="w-full max-w-xs grid grid-cols-3 gap-2 mt-3">
+        <div></div>
+        <button id="btn-up" class="arcade-btn py-3 bg-indigo-700 active:bg-indigo-500 text-white font-bold text-xl rounded-xl border-indigo-900 shadow-md">▲</button>
+        <div></div>
+        <button id="btn-left" class="arcade-btn py-3 bg-indigo-700 active:bg-indigo-500 text-white font-bold text-xl rounded-xl border-indigo-900 shadow-md">◀</button>
+        <button id="btn-down" class="arcade-btn py-3 bg-indigo-700 active:bg-indigo-500 text-white font-bold text-xl rounded-xl border-indigo-900 shadow-md">▼</button>
+        <button id="btn-right" class="arcade-btn py-3 bg-indigo-700 active:bg-indigo-500 text-white font-bold text-xl rounded-xl border-indigo-900 shadow-md">▶</button>
+      </div>
     </div>
 
-    <!-- Footer Copyright -->
-    <footer>
-        © 2026 Ular Wira Moral | Direka khas oleh <span>Cikgu Zulaikha</span>. Hak Cipta Terpelihara.<br>Kurikulum Standard Sekolah Rendah (KSSR) Pendidikan Moral
-    </footer>
+    <!-- MODAL 1: KSSR Moral Question Popup -->
+    <div id="question-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+      <div class="arcade-card w-full max-w-md p-5 flex flex-col space-y-4 shadow-2xl">
+        <div class="flex justify-between items-center border-b border-cyan-500/40 pb-2">
+          <span class="text-xs font-arcade text-yellow-400 flex items-center gap-1">
+            <i class="fas fa-graduation-cap"></i> SOALAN MORAL KSSR
+          </span>
+          <span id="question-nilai-badge" class="px-2 py-0.5 bg-pink-600/80 text-white text-[11px] font-bold rounded-full">
+            Nilai Murni
+          </span>
+        </div>
 
-    <!-- Game Script -->
-    <script>
-        /* 1. KSSR QUESTIONS BANK WITH VALUES */
-        const moralQuestions = [
-            { nilai: "Nilai Rasional", q: "Sebelum membuat keputusan yang penting, kita hendaklah...", options: ["A. Mengikut emosi dan perasaan marah", "B. Berfikir tentang kesan baik dan buruknya terlebih dahulu", "C. Mengikut cakap rakan tanpa berfikir", "D. Melakukan tanpa perancangan"], answer: 1, desc: "Nilai Rasional membantu kita berfikir berdasarkan alasan dan bukti yang munasabah." },
-            { nilai: "Nilai Kejujuran", q: "Apakah tindakan yang betul apabila menjumpai wang di bilik darjah?", options: ["A. Simpan sendiri", "B. Serahkan kepada guru bertugas", "C. Beli makanan di kantin", "D. Agak-agak belanja kawan"], answer: 1, desc: "Kejujuran bermaksud bercakap benar dan tidak mengambil barang yang bukan hak kita." },
-            { nilai: "Nilai Hormat", q: "Bagaimanakah cara menunjukkan rasa hormat kepada guru?", options: ["A. Memberi salam apabila bertemu", "B. Lari berpura-pura tidak nampak", "C. Bercakap kasar", "D. Mengendahkan arahan guru"], answer: 0, desc: "Menghormati guru memupuk hubungan yang harmoni di sekolah." },
-            { nilai: "Nilai Bertanggungjawab", q: "Membuang sampah di dalam tong sampah adalah amalan...", options: ["A. Bertanggungjawab", "B. Mementingkan diri", "C. Membazir masa", "D. Suka-suka"], answer: 0, desc: "Menjaga kebersihan persekitaran adalah tanggungjawab bersama." },
-            { nilai: "Nilai Toleransi", q: "Jika kawan tidak sengaja merosakkan pensel anda, anda harus...", options: ["A. Memarahinya di depan ramai", "B. Memaafkan dan berbincang elok-elok", "C. Merosakkan barangnya pula", "D. Memusuhinya"], answer: 1, desc: "Sikap bertoleransi dan memaafkan dapat mengelakkan pergaduhan." }
+        <p id="question-text" class="text-sm sm:text-base font-semibold text-white leading-relaxed pt-1">
+          Soalan...
+        </p>
+
+        <!-- Question Options -->
+        <div id="options-container" class="flex flex-col space-y-2 pt-1"></div>
+
+        <!-- Feedback Result Message -->
+        <div id="feedback-container" class="hidden p-3 rounded-xl text-center font-bold text-sm space-y-1">
+          <div id="feedback-title" class="text-sm font-arcade"></div>
+          <div id="feedback-explanation" class="text-xs font-normal text-slate-200"></div>
+          <button id="continue-btn" class="mt-2 w-full py-2.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-lg text-xs font-arcade">
+            TERUSKAN PERMAINAN ▶
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 2: Game Over Screen -->
+    <div id="gameover-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+      <div class="arcade-card w-full max-w-md p-6 flex flex-col items-center text-center space-y-4 border-red-500">
+        <h2 class="text-xl sm:text-2xl font-arcade text-red-500 neon-text-pink">TAMAT PERMAINAN</h2>
+        <p class="text-xs text-slate-300">Syabas atas usaha anda menjadi Wira Moral!</p>
+
+        <div class="w-full bg-slate-900/90 border border-slate-700 rounded-xl p-4 space-y-2 text-left text-xs sm:text-sm">
+          <div class="flex justify-between">
+            <span class="text-slate-400">Pemain:</span>
+            <span id="go-player-name" class="font-bold text-cyan-400">Pemain</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Jumlah Skor:</span>
+            <span id="go-final-score" class="font-bold font-arcade text-yellow-400">0</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Soalan Moral Dijawab Betul:</span>
+            <span id="go-questions-count" class="font-bold text-green-400">0</span>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 w-full pt-2">
+          <button id="restart-game-btn" class="arcade-btn flex-1 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-arcade text-xs font-bold rounded-xl border-emerald-700">
+            🎮 MAIN LAGI
+          </button>
+          <button id="go-leaderboard-btn" class="arcade-btn flex-1 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-arcade text-xs font-bold rounded-xl border-cyan-800">
+            🏆 CARTA SKOR
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 3: Leaderboard Modal -->
+    <div id="leaderboard-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+      <div class="arcade-card w-full max-w-md p-5 flex flex-col space-y-4 max-h-[85vh]">
+        <div class="flex justify-between items-center border-b border-cyan-500/40 pb-2">
+          <h3 class="text-base font-arcade text-yellow-400 neon-text-yellow flex items-center gap-2">
+            🏆 CARTA SKOR WIRA
+          </h3>
+          <button id="close-leaderboard-btn" class="text-slate-400 hover:text-white text-lg font-bold px-2">✕</button>
+        </div>
+
+        <!-- Leaderboard List -->
+        <div class="overflow-y-auto flex-1 space-y-2 pr-1" id="leaderboard-list"></div>
+
+        <!-- Action Buttons inside Leaderboard -->
+        <div class="flex flex-col space-y-2 pt-2 border-t border-slate-800">
+          <button id="lb-play-again-btn" class="arcade-btn w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-arcade text-xs font-bold rounded-xl border-emerald-700 shadow">
+            🎮 MAIN LAGI
+          </button>
+
+          <!-- Admin Area -->
+          <div class="flex justify-between items-center pt-1 text-[11px]">
+            <button id="admin-login-btn" class="text-slate-400 hover:text-cyan-300 underline flex items-center gap-1">
+              <i class="fas fa-user-shield"></i> <span id="admin-status-text">Akses Cikgu Zulaikha</span>
+            </button>
+            <button id="clear-leaderboard-btn" class="text-red-400 hover:text-red-300 font-bold bg-red-950/80 px-2.5 py-1 rounded border border-red-800 hidden">
+              🗑️ Padam Rekod Skor
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 4: Teacher Password Prompt -->
+    <div id="admin-modal" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+      <div class="arcade-card w-full max-w-xs p-5 flex flex-col space-y-3 text-center border-yellow-500 shadow-2xl">
+        <h4 class="font-arcade text-yellow-400 text-xs">AKSES CIKGU ZULAIKHA</h4>
+        <p class="text-xs text-slate-300">Sila masukkan kata laluan untuk pengurusan skor:</p>
+        <input type="password" id="admin-pass-input" placeholder="Kata laluan..." class="px-3 py-2 bg-slate-900 border border-yellow-500 rounded text-center text-sm font-bold text-yellow-300 focus:outline-none">
+        <div class="flex gap-2 pt-1">
+          <button id="admin-cancel-btn" class="flex-1 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded text-xs font-bold">Batal</button>
+          <button id="admin-submit-btn" class="flex-1 py-2 bg-yellow-500 hover:bg-yellow-400 text-slate-950 rounded text-xs font-bold font-arcade">MASUK</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Copyright Footer -->
+  <footer class="w-full max-w-lg text-center text-xs text-slate-400 my-2 z-20">
+    <p>© 2026 Ular Wira Moral | Direka khas oleh <strong class="text-yellow-400">Cikgu Zulaikha</strong>. Hak Cipta Terpelihara.</p>
+    <p class="text-[10px] text-slate-500 mt-0.5">Kurikulum Standard Sekolah Rendah (KSSR) Pendidikan Moral</p>
+  </footer>
+
+  <script>
+    /* ========================================================================
+     * 1. 8-BIT RETRO SYNTH AUDIO & RETRO BGM ENGINE
+     * ======================================================================== */
+    class RetroAudioEngine {
+      constructor() {
+        this.ctx = null;
+        this.mutedSFX = false;
+        this.mutedBGM = false;
+        this.bgmTimer = null;
+        this.bgmStep = 0;
+        this.isBGMPlaying = false;
+
+        this.melody = [
+          261.63, 329.63, 392.00, 523.25, 392.00, 329.63, 261.63, 329.63,
+          293.66, 349.23, 440.00, 587.33, 440.00, 349.23, 293.66, 349.23,
+          329.63, 392.00, 493.88, 659.25, 493.88, 392.00, 329.63, 392.00,
+          349.23, 440.00, 523.25, 698.46, 523.25, 440.00, 392.00, 523.25
         ];
 
-        /* 2. AUDIO ENGINE */
-        class RetroAudioEngine {
-            constructor() { this.ctx = null; this.bgmEnabled = true; this.bgmTimer = null; }
-            init() {
-                if (!this.ctx) {
-                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                    this.ctx = new AudioCtx();
-                }
-                if (this.ctx.state === 'suspended') this.ctx.resume();
-            }
-            playEatSound() {
-                if (!this.ctx) return;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'square';
-                osc.frequency.setValueAtTime(300, this.ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.1);
-                gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
-                gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.1);
-                osc.connect(gain); gain.connect(this.ctx.destination);
-                osc.start(); osc.stop(this.ctx.currentTime + 0.1);
-            }
-            playCorrectSound() {
-                if (!this.ctx) return;
-                const notes = [400, 600, 800];
-                notes.forEach((freq, idx) => {
-                    const osc = this.ctx.createOscillator();
-                    const gain = this.ctx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.08);
-                    gain.gain.setValueAtTime(0.15, this.ctx.currentTime + idx * 0.08);
-                    gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + (idx + 1) * 0.08);
-                    osc.connect(gain); gain.connect(this.ctx.destination);
-                    osc.start(this.ctx.currentTime + idx * 0.08);
-                    osc.stop(this.ctx.currentTime + (idx + 1) * 0.08);
-                });
-            }
-            playWrongSound() {
-                if (!this.ctx) return;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(200, this.ctx.currentTime);
-                osc.frequency.linearRampToValueAtTime(90, this.ctx.currentTime + 0.25);
-                gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
-                gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.25);
-                osc.connect(gain); gain.connect(this.ctx.destination);
-                osc.start(); osc.stop(this.ctx.currentTime + 0.25);
-            }
-            startBGM() {
-                if (this.bgmTimer) return;
-                const melody = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25];
-                let step = 0;
-                this.bgmTimer = setInterval(() => {
-                    if (!this.bgmEnabled || !this.ctx) return;
-                    const osc = this.ctx.createOscillator();
-                    const gain = this.ctx.createGain();
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(melody[step % melody.length], this.ctx.currentTime);
-                    gain.gain.setValueAtTime(0.02, this.ctx.currentTime);
-                    gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.18);
-                    osc.connect(gain); gain.connect(this.ctx.destination);
-                    osc.start(); osc.stop(this.ctx.currentTime + 0.18);
-                    step++;
-                }, 220);
-            }
-            stopBGM() { if (this.bgmTimer) { clearInterval(this.bgmTimer); this.bgmTimer = null; } }
-            toggleBGM() { this.bgmEnabled = !this.bgmEnabled; return this.bgmEnabled; }
+        this.bass = [
+          130.81, 130.81, 196.00, 130.81, 146.83, 146.83, 220.00, 146.83,
+          164.81, 164.81, 246.94, 164.81, 174.61, 174.61, 261.63, 196.00
+        ];
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioCtx();
         }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
 
-        const audio = new RetroAudioEngine();
+      playTone(freq, duration, type = 'square', startGain = 0.12, endGain = 0.01) {
+        if (this.mutedSFX) return;
+        this.init();
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
 
-        /* 3. GAME CANVAS STATE */
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const GRID_SIZE = 20;
-        const TILE_COUNT = canvas.width / GRID_SIZE;
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
 
-        let snake = [];
-        let dx = 1, dy = 0;
-        let nextDx = 1, nextDy = 0;
-        let food = { x: 5, y: 5 };
-        let score = 0;
-        let correctAnswersCount = 0;
-        let playerName = "";
-        let gameInterval = null;
-        let isPausedForQuiz = false;
-        let currentQuestionIndex = 0;
-        let isAdminLoggedIn = false;
+          gain.gain.setValueAtTime(startGain, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(endGain, this.ctx.currentTime + duration);
 
-        // UI DOM Elements
-        const scoreDisplay = document.getElementById('score-display');
-        const playerDisplay = document.getElementById('player-display');
-        const startScreen = document.getElementById('start-screen');
-        const quizScreen = document.getElementById('quiz-screen');
-        const gameoverScreen = document.getElementById('gameover-screen');
-        const leaderboardScreen = document.getElementById('leaderboard-screen');
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
 
-        document.getElementById('btn-start').addEventListener('click', startGame);
-        document.getElementById('btn-replay').addEventListener('click', resetToStartScreen);
-        document.getElementById('btn-show-scores').addEventListener('click', () => showLeaderboard(startScreen));
-        document.getElementById('btn-leaderboard-from-over').addEventListener('click', () => showLeaderboard(gameoverScreen));
-        document.getElementById('btn-back-to-start').addEventListener('click', resetToStartScreen);
-        document.getElementById('btn-continue-game').addEventListener('click', resumeFromQuiz);
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) {
+          console.warn("Audio error:", e);
+        }
+      }
 
-        document.getElementById('toggle-audio').addEventListener('click', () => {
-            audio.init();
-            const active = audio.toggleBGM();
-            document.getElementById('toggle-audio').innerText = active ? "🔊 BGM: ON" : "🔇 BGM: OFF";
+      playEat() {
+        this.playTone(520, 0.08, 'square', 0.12);
+        setTimeout(() => this.playTone(780, 0.1, 'square', 0.12), 60);
+      }
+
+      playTurn() {
+        this.playTone(300, 0.03, 'triangle', 0.05);
+      }
+
+      playCorrect() {
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+          setTimeout(() => this.playTone(freq, 0.12, 'sine', 0.2), idx * 70);
         });
+      }
 
-        window.addEventListener('keydown', e => {
-            audio.init();
-            switch (e.key) {
-                case 'ArrowUp': case 'w': case 'W': if (dy === 0) { nextDx = 0; nextDy = -1; } break;
-                case 'ArrowDown': case 's': case 'S': if (dy === 0) { nextDx = 0; nextDy = 1; } break;
-                case 'ArrowLeft': case 'a': case 'A': if (dx === 0) { nextDx = -1; nextDy = 0; } break;
-                case 'ArrowRight': case 'd': case 'D': if (dx === 0) { nextDx = 1; nextDy = 0; } break;
-            }
+      playWrong() {
+        this.playTone(180, 0.18, 'sawtooth', 0.2);
+        setTimeout(() => this.playTone(130, 0.25, 'sawtooth', 0.2), 140);
+      }
+
+      playGameOver() {
+        this.stopBGM();
+        const notes = [380, 320, 260, 200, 140];
+        notes.forEach((freq, idx) => {
+          setTimeout(() => this.playTone(freq, 0.15, 'sawtooth', 0.2), idx * 100);
         });
+      }
 
-        document.getElementById('btn-up').addEventListener('click', () => { if (dy === 0) { nextDx = 0; nextDy = -1; } });
-        document.getElementById('btn-down').addEventListener('click', () => { if (dy === 0) { nextDx = 0; nextDy = 1; } });
-        document.getElementById('btn-left').addEventListener('click', () => { if (dx === 0) { nextDx = -1; nextDy = 0; } });
-        document.getElementById('btn-right').addEventListener('click', () => { if (dx === 0) { nextDx = 1; nextDy = 0; } });
+      startBGM() {
+        if (this.mutedBGM || this.isBGMPlaying) return;
+        this.init();
+        this.isBGMPlaying = true;
+        this.bgmStep = 0;
 
-        function resetToStartScreen() {
-            clearInterval(gameInterval);
-            audio.stopBGM();
-            gameoverScreen.classList.add('hidden');
-            leaderboardScreen.classList.add('hidden');
-            quizScreen.classList.add('hidden');
-            startScreen.classList.remove('hidden');
-            drawInitialCanvas();
+        this.bgmTimer = setInterval(() => {
+          if (!this.isBGMPlaying || this.mutedBGM) return;
+
+          const melNote = this.melody[this.bgmStep % this.melody.length];
+          const bassNote = this.bass[Math.floor(this.bgmStep / 2) % this.bass.length];
+
+          try {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(melNote, this.ctx.currentTime);
+            gain.gain.setValueAtTime(0.025, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.13);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start();
+            osc.stop(this.ctx.currentTime + 0.14);
+          } catch (e) {}
+
+          if (this.bgmStep % 2 === 0) {
+            try {
+              const bassOsc = this.ctx.createOscillator();
+              const bassGain = this.ctx.createGain();
+              bassOsc.type = 'triangle';
+              bassOsc.frequency.setValueAtTime(bassNote, this.ctx.currentTime);
+              bassGain.gain.setValueAtTime(0.04, this.ctx.currentTime);
+              bassGain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.26);
+              bassOsc.connect(bassGain);
+              bassGain.connect(this.ctx.destination);
+              bassOsc.start();
+              bassOsc.stop(this.ctx.currentTime + 0.27);
+            } catch (e) {}
+          }
+
+          this.bgmStep++;
+        }, 150);
+      }
+
+      pauseBGM() {
+        this.isBGMPlaying = false;
+        if (this.bgmTimer) {
+          clearInterval(this.bgmTimer);
+          this.bgmTimer = null;
+        }
+      }
+
+      stopBGM() {
+        this.pauseBGM();
+        this.bgmStep = 0;
+      }
+    }
+
+    const synth = new RetroAudioEngine();
+
+    /* ========================================================================
+     * 2. KSSR MORAL QUESTION BANK (30 COMPLETE QUESTIONS)
+     * ======================================================================== */
+    const MORAL_QUESTIONS = [
+      {
+        nilai: "Baik Hati",
+        question: "Apakah tindakan yang wajar apabila melihat rakan anda jatuh dari basikal?",
+        options: ["Mentertawakan rakan", "Membantu rakan bangun dan merawat lukanya", "Membiarkan rakan bersendirian", "Mengambil basikal rakan"],
+        answer: 1,
+        explanation: "Nilai Baik Hati mendorong kita menolong orang lain yang berada dalam kesusahan."
+      },
+      {
+        nilai: "Bertanggungjawab",
+        question: "Anda ditugaskan menyapu kelas pada hari Selasa. Apakah tindakan anda?",
+        options: ["Pura-pura sakit dan pulang awal", "Melaksanakan tugas menyapu kelas dengan tekun", "Menyuruh rakan lain menggantikan tempat anda", "Bermain di luar kelas"],
+        answer: 1,
+        explanation: "Nilai Bertanggungjawab meminta kita melaksanakan kewajipan yang diberi."
+      },
+      {
+        nilai: "Berterima Kasih",
+        question: "Ibu telah menyediakan hidangan makanan kegemaran anda. Apakah ucapan anda?",
+        options: ["Minta makanan lain", "Makan tanpa berkata apa-apa", "Mengucapkan terima kasih kepada ibu", "Meninggalkan meja makan"],
+        answer: 2,
+        explanation: "Melahirkan rasa syukur dan berterima kasih memupuk kasih sayang keluarga."
+      },
+      {
+        nilai: "Hemah Tinggi",
+        question: "Bagaimanakah cara bercakap dengan jiran yang lebih tua daripada anda?",
+        options: ["Menggunakan bahasa yang sopan dan lemah lembut", "Tengking jika tidak bersetuju", "Mengabaikan mereka apabila disapa", "Menggunakan kata-kata kasar"],
+        answer: 0,
+        explanation: "Beradab sopan dan berbudi pekerti mulia adalah teras nilai Hemah Tinggi."
+      },
+      {
+        nilai: "Hormat",
+        question: "Semasa lagu Negaraku dimainkan, apakah perkara yang patut anda lakukan?",
+        options: ["Bercakap dengan rakan", "Berdiri tegak dan menyanyi dengan penuh rasa hormat", "Berjalan ke kantin", "Duduk santai"],
+        answer: 1,
+        explanation: "Berdiri tegak semasa lagu kebangsaan dimainkan mempamerkan rasa hormat kepada negara."
+      },
+      {
+        nilai: "Kasih Sayang",
+        question: "Apakah amalan terbaik untuk menunjukkan kasih sayang kepada ahli keluarga?",
+        options: ["Meminta wang setiap hari", "Membantu kerja rumah dan mengambil berat", "Bermain telefon bimbit sepanjang hari", "Menjerit apabila marah"],
+        answer: 1,
+        explanation: "Saling membantu dan mengambil berat merapatkan hubungan kekeluargaan."
+      },
+      {
+        nilai: "Keadilan",
+        question: "Ibu memotong sebiji kek untuk 2 orang anak. Bagaimanakah pembahagian yang adil?",
+        options: ["Memotong kek secara saksama untuk kedua-dua anak", "MEMBERIKAN semua kek kepada anak bongsu", "Mengambil kek itu untuk diri sendiri", "Membuang separuh daripadanya"],
+        answer: 0,
+        explanation: "Keadilan bermaksud membuat pertimbangan dan keputusan yang saksama."
+      },
+      {
+        nilai: "Keberanian",
+        question: "Anda ternampak seorang rakan dibuli di kawasan sekolah. Apakah tindakan betul?",
+        options: ["Menyertai pembuli tersebut", "Melaporkan kejadian dengan berani kepada guru", "Melarikan diri dan mendiamkan diri", "Mentertawakan mangsa"],
+        answer: 1,
+        explanation: "Berani melaporkan salah laku kepada pihak berkuasa/guru adalah tindakan wira moral."
+      },
+      {
+        nilai: "Kejujuran",
+        question: "Anda menjumpai dompet berisi wang di padang sekolah. Apakah tindakan anda?",
+        options: ["Mengambil wang dan membuang dompet", "Menyerahkan dompet tersebut kepada guru atau pejabat", "Membeli gula-gula untuk rakan", "Menyimpan dompet di dalam beg"],
+        answer: 1,
+        explanation: "Kejujuran bermaksud bercakap benar, amanah dan tidak mengambil hak orang lain."
+      },
+      {
+        nilai: "Kerajinan",
+        question: "Ulang kaji pelajaran perlu dilakukan secara...",
+        options: ["Hanya apabila peperiksaan hampir tiba", "Berterusan dan bersungguh-sungguh", "Apabila dipaksa oleh ibu bapa sahaja", "Sambil menonton televisyen"],
+        answer: 1,
+        explanation: "Kerajinan ialah usaha yang berterusan dengan penuh semangat dan tekun."
+      },
+      {
+        nilai: "Kerjasama",
+        question: "Satu tugasan kumpulan telah diberikan oleh guru. Bagaimanakah anda bertindak?",
+        options: ["Menyiapkan tugasan bersama-sama ahli kumpulan", "Menyerahkan semua kerja kepada ketua kumpulan", "Bermain-main semasa sesi perbincangan", "Enggan bertukar idea"],
+        answer: 0,
+        explanation: "Bekerjasama membolehkan sebarang tugasan berat menjadi lebih mudah dan cepat siap."
+      },
+      {
+        nilai: "Kesederhanaan",
+        question: "Semasa mengambil makanan di majlis kenduri, kita hendaklah...",
+        options: ["Mengambil makanan secara berlebihan hingga membazir", "Mengambil makanan mengikut kadar keperluan sahaja", "Mengambil semua jenis pencuci mulut sahaja", "Membuang makanan yang tidak disukai"],
+        answer: 1,
+        explanation: "Kesederhanaan membolehkan kita tidak melampaui batas dan mengelakkan pembaziran."
+      },
+      {
+        nilai: "Toleransi",
+        question: "Rakan anda berlainan agama sedang berpuasa. Apakah sikap toleransi anda?",
+        options: ["Makan dan minum secara terbuka di hadapannya", "Hormati mereka dan tidak makan secara terang-terangan di hadapannya", "Ejek amalan ibadah mereka", "Memaksa mereka makan"],
+        answer: 1,
+        explanation: "Toleransi membentuk sikap bertolak ansur dan menghormati kepelbagaian kaum/agama."
+      },
+      {
+        nilai: "Rasional",
+        question: "Sebelum membuat keputusan yang penting, kita hendaklah...",
+        options: ["Mengikut emosi dan perasaan marah", "Berfikir tentang kesan baik dan buruknya terlebih dahulu", "Mengikut cakap rakan tanpa berfikir", "Melakukan tanpa perancangan"],
+        answer: 1,
+        explanation: "Nilai Rasional membantu kita berfikir berdasarkan alasan dan bukti yang munasabah."
+      },
+      {
+        nilai: "Semangat Bermasyarakat",
+        question: "Penduduk taman perumahan mengadakan aktiviti gotong-royong. Anda patut...",
+        options: ["Duduk di dalam rumah sahaja", "Melibatkan diri membantu membersihkan kawasan persekitaran", "Mengotor kawasan sekitar", "Mengkritik jiran-jiran"],
+        answer: 1,
+        explanation: "Melibatkan diri dalam aktiviti kemasyarakatan mengukuhkan tali silaturahim."
+      },
+      {
+        nilai: "Baik Hati",
+        question: "Seseorang warga tua sukar melintas jalan raya yang sibuk. Tindakan anda ialah...",
+        options: ["Membiarkan orang tua tersebut melintas sendiri", "Memimpin dan membimbing orang tua itu melintas jalan", "Pura-pura tidak nampak", "Menyuruhnya patah balik"],
+        answer: 1,
+        explanation: "Prihatin dan bersedia membantu golongan memerlukan ialah tanda baik hati."
+      },
+      {
+        nilai: "Hormat",
+        question: "Bagaimanakah sikap anda apabila menghadiri rumah terbuka jiran berbilang kaum?",
+        options: ["Menghormati adat dan budaya jiran tersebut", "Menghina makanan tradisional mereka", "Membuat bising di dalam rumah", "Enggan bersalaman atau menyapa"],
+        answer: 0,
+        explanation: "Menghormati budaya kaum lain menguatkan perpaduan rakyat Malaysia."
+      },
+      {
+        nilai: "Bertanggungjawab",
+        question: "Selepas selesai menggunakan alatan di makmal sains sekolah, anda perlu...",
+        options: ["Meninggalkan alatan di atas meja", "Membersihkan dan menyimpan alatan di tempat asal", "Membawa balik alatan ke rumah", "Membuang alatan ke dalam tong sampah"],
+        answer: 1,
+        explanation: "Memelihara kebersihan dan keselamatan alatan sekolah ialah tanggungjawab murid."
+      },
+      {
+        nilai: "Kejujuran",
+        question: "Anda secara tidak sengaja memecahkan pasu bunga kesayangan ibu. Tindakan anda ialah...",
+        options: ["Menuduh kucing memecahkannya", "Mengaku kesilapan diri dan meminta maaf kepada ibu", "Sembunyikan serpihan pasu", "Melarikan diri keluar rumah"],
+        answer: 1,
+        explanation: "Mengaku kesalahan secara jujur menunjukkan keperibadian wira moral yang mulia."
+      },
+      {
+        nilai: "Hemah Tinggi",
+        question: "Apabila menerima bantuan atau hadiah daripada seseorang, ucapan yang sewajarnya ialah...",
+        options: ["'Terima kasih'", "'Nanti bagi lagi'", "'Biasa sahaja'", "Meninggalkan orang itu terus"],
+        answer: 0,
+        explanation: "Mengucapkan terima kasih merupakan amalan berbudi bahasa yang tinggi."
+      },
+      {
+        nilai: "Kasih Sayang",
+        question: "Apakah tindakan anda apabila melihat haiwan peliharaan kesakitan?",
+        options: ["Menendang haiwan tersebut", "Memberi perlindungan, rawatan atau makanan", "Pura-pura tidak nampak", "Membaling batu"],
+        answer: 1,
+        explanation: "Kasih sayang merangkumi perasaan belas kasihan terhadap haiwan dan alam sekitar."
+      },
+      {
+        nilai: "Keadilan",
+        question: "Semasa membahagikan kumpulan permainan, ketua perlu...",
+        options: ["Memilih rakan karib sahaja untuk pasukan kuat", "Membahagikan ahli secara adil dan seimbang", "Membiarkan pemain yang lemah bersendirian", "Mengabaikan rakan baharu"],
+        answer: 1,
+        explanation: "Sikap saksama tanpa pilih kasih adalah amalan keadilan yang terpuji."
+      },
+      {
+        nilai: "Keberanian",
+        question: "Apakah yang anda lakukan jika dipaksa melakukan perkara salah oleh rakan?",
+        options: ["Menuruti sahaja kerana takut dipulaukan", "Tegas berkata 'TIDAK' dan berani menolak ajakan salah", "Menjemput rakan lain ikut serta", "Diam sahaja"],
+        answer: 1,
+        explanation: "Keberanian moral termasuklah berani mempertahankan kebenaran dan menolak kejahatan."
+      },
+      {
+        nilai: "Kerajinan",
+        question: "Murid yang rajin akan sentiasa...",
+        options: ["Menyiapkan kerja sekolah mengikut tempoh yang ditetapkan", "Menangguhkan kerja sehingga saat akhir", "Meniru kerja sekolah rakan lain", "Memberi pelbagai alasan untuk tidak belajar"],
+        answer: 0,
+        explanation: "Kerajinan melahirkan disiplin diri yang mantap dalam pembelajaran."
+      },
+      {
+        nilai: "Kerjasama",
+        question: "Apakah faedah bergotong-royong membersihkan kawasan kediaman?",
+        options: ["Kawasan menjadi semakin kotor", "Pekerjaan menjadi lebih cepat, mudah dan mengeratkan perpaduan", "Menimbulkan pergaduhan antara jiran", "Membuat orang ramai penat sahaja"],
+        answer: 1,
+        explanation: "Kerjasama memupuk perpaduan dan meringankan beban pekerjaan."
+      },
+      {
+        nilai: "Kesederhanaan",
+        question: "Semasa menggunakan air untuk berwuduk atau membasuh tangan, kita perlu...",
+        options: ["Buka paip air dengan paling kuat", "Menggunakan air mengikut kadar keperluan tanpa membazir", "Membiarkan air melimpah", "Membuat mainan air"],
+        answer: 1,
+        explanation: "Kesederhanaan memelihara sumber alam daripada terbazir."
+      },
+      {
+        nilai: "Toleransi",
+        question: "Jika rakan anda terlewat sedikit ke perjumpaan kerana hal kecemasan, anda patut...",
+        options: ["Marah dan mematikan perjumpaan", "Sabar mendengar penjelasannya dan bertolak ansur", "Memusuhinya sepanjang hayat", "Melaporkan kepada polis"],
+        answer: 1,
+        explanation: "Bertolak ansur dan sabar menghadapi situasi adalah amalan toleransi."
+      },
+      {
+        nilai: "Rasional",
+        question: "Sebelum membeli barang permainan yang mahal, murid perlu...",
+        options: ["Menangis menuntut ibu bapa membelikannya", "Berfikir sama ada ia barang keperluan atau kehendak sahaja", "Meminjam wang daripada rakan", "Mencuri wang ibu bapa"],
+        answer: 1,
+        explanation: "Berfikir secara rasional membantu membuat pilihan bijak dan berhemah."
+      },
+      {
+        nilai: "Semangat Bermasyarakat",
+        question: "Bagaimanakah sikap anda terhadap jiran baharu yang berpindah ke sebelah rumah?",
+        options: ["Menyapa mesra dan menyambut kehadiran mereka", "Mengunci pintu dan menutup tingkap", "Membuang sampah ke rumah mereka", "Memandang serong"],
+        answer: 0,
+        explanation: "Menyambut jiran baharu dengan mesra mengeratkan jalinan kejiranan."
+      },
+      {
+        nilai: "Berterima Kasih",
+        question: "Guru memberikan pujian atas usaha gigih anda dalam ujian. Ucapan anda ialah...",
+        options: ["'Terima kasih cikgu, saya akan terus berusaha'", "'Memang saya pandai'", "Mencebik muka", "Diam sahaja"],
+        answer: 0,
+        explanation: "Sentiasa bersyukur dan berterima kasih atas dorongan dan dorongan orang lain."
+      }
+    ];
+
+    /* ========================================================================
+     * 3. GAME ENGINE & LOGIC
+     * ======================================================================== */
+    const canvas = document.getElementById('game-canvas');
+    const ctx = canvas.getContext('2d');
+    const previewCanvas = document.getElementById('preview-canvas');
+    const pCtx = previewCanvas.getContext('2d');
+
+    const GRID_COUNT = 20;
+    let tileSize = 20;
+
+    let snake = [];
+    let food = { x: 0, y: 0 };
+    let dx = 1, dy = 0;
+    let nextDx = 1, nextDy = 0;
+
+    let score = 0;
+    let questionsAnsweredCorrect = 0;
+    let lives = 3;
+    let gameLoopTimer = null;
+    let isPaused = false;
+    let isGameRunning = false;
+
+    let playerName = "";
+    let isAdmin = false;
+    let currentQuestion = null;
+
+    // Local Storage Score Management
+    const LOCAL_SCORE_KEY = 'ular_wira_moral_scores';
+
+    function getLocalScores() {
+      try {
+        return JSON.parse(localStorage.getItem(LOCAL_SCORE_KEY) || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveLocalScore(entry) {
+      let scores = getLocalScores();
+      scores.push(entry);
+      scores.sort((a, b) => b.score - a.score);
+      scores = scores.slice(0, 15);
+      localStorage.setItem(LOCAL_SCORE_KEY, JSON.stringify(scores));
+    }
+
+    function clearLocalScores() {
+      localStorage.removeItem(LOCAL_SCORE_KEY);
+    }
+
+    function deleteSingleLocalScore(index) {
+      let scores = getLocalScores();
+      scores.splice(index, 1);
+      localStorage.setItem(LOCAL_SCORE_KEY, JSON.stringify(scores));
+    }
+
+    // Resize Canvas Dynamically
+    function resizeCanvas() {
+      const container = document.getElementById('canvas-container');
+      const size = container.clientWidth;
+      canvas.width = size;
+      canvas.height = size;
+      tileSize = size / GRID_COUNT;
+
+      previewCanvas.width = 240;
+      previewCanvas.height = 240;
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    // Render Start Screen Snake Preview Animation
+    let previewStep = 0;
+    function drawPreview() {
+      pCtx.fillStyle = '#0a0c16';
+      pCtx.fillRect(0, 0, previewCanvas.width, previewCanvas.height);
+
+      const pTile = 240 / 12;
+      // Draw Grid Lines
+      pCtx.strokeStyle = 'rgba(0, 240, 255, 0.05)';
+      for (let i = 0; i < 240; i += pTile) {
+        pCtx.beginPath(); pCtx.moveTo(i, 0); pCtx.lineTo(i, 240); pCtx.stroke();
+        pCtx.beginPath(); pCtx.moveTo(0, i); pCtx.lineTo(240, i); pCtx.stroke();
+      }
+
+      // Animated Snake Preview
+      const snakeBody = [
+        { x: 6 + Math.sin(previewStep * 0.1) * 2, y: 6 },
+        { x: 5 + Math.sin(previewStep * 0.1) * 2, y: 6 },
+        { x: 4 + Math.sin(previewStep * 0.1) * 2, y: 6 }
+      ];
+
+      snakeBody.forEach((seg, idx) => {
+        pCtx.fillStyle = idx === 0 ? '#00ff66' : '#00cc52';
+        pCtx.shadowColor = '#00ff66';
+        pCtx.shadowBlur = idx === 0 ? 8 : 0;
+        pCtx.fillRect(seg.x * pTile + 1, seg.y * pTile + 1, pTile - 2, pTile - 2);
+      });
+
+      // Apple Food Preview
+      pCtx.fillStyle = '#ff0055';
+      pCtx.shadowColor = '#ff0055';
+      pCtx.shadowBlur = 10;
+      pCtx.beginPath();
+      pCtx.arc(9 * pTile + pTile/2, 6 * pTile + pTile/2, pTile/2.5, 0, Math.PI * 2);
+      pCtx.fill();
+
+      pCtx.shadowBlur = 0;
+      previewStep++;
+      if (!isGameRunning) requestAnimationFrame(drawPreview);
+    }
+
+    // Game Core Initialization
+    function initGame() {
+      resizeCanvas();
+      playerName = document.getElementById('player-name-input').value.trim().toUpperCase() || 'WIRA MORAL';
+      
+      score = 0;
+      questionsAnsweredCorrect = 0;
+      lives = 3;
+      dx = 1; dy = 0;
+      nextDx = 1; nextDy = 0;
+
+      snake = [
+        { x: 5, y: 10 },
+        { x: 4, y: 10 },
+        { x: 3, y: 10 }
+      ];
+
+      spawnFood();
+      updateHUD();
+
+      document.getElementById('start-screen').classList.add('hidden');
+      document.getElementById('game-screen').classList.remove('hidden');
+      document.getElementById('pause-btn').classList.remove('hidden');
+
+      isGameRunning = true;
+      isPaused = false;
+
+      synth.startBGM();
+
+      if (gameLoopTimer) clearInterval(gameLoopTimer);
+      gameLoopTimer = setInterval(gameStep, 130);
+    }
+
+    function spawnFood() {
+      food.x = Math.floor(Math.random() * GRID_COUNT);
+      food.y = Math.floor(Math.random() * GRID_COUNT);
+
+      for (let seg of snake) {
+        if (seg.x === food.x && seg.y === food.y) {
+          spawnFood();
+          break;
+        }
+      }
+    }
+
+    function updateHUD() {
+      document.getElementById('score-display').innerText = score;
+      document.getElementById('moral-stars-display').innerText = questionsAnsweredCorrect;
+      
+      let hearts = '';
+      for (let i = 0; i < lives; i++) hearts += '❤️';
+      for (let i = lives; i < 3; i++) hearts += '🖤';
+      document.getElementById('lives-display').innerText = hearts;
+    }
+
+    // Main Game Loop Step
+    function gameStep() {
+      if (isPaused || !isGameRunning) return;
+
+      dx = nextDx;
+      dy = nextDy;
+
+      const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+
+      // Wall Collision -> Deduct Life & Respawn
+      if (head.x < 0 || head.x >= GRID_COUNT || head.y < 0 || head.y >= GRID_COUNT) {
+        handleCollision("Melanggar sempadan!");
+        return;
+      }
+
+      // Self Collision -> Deduct Life & Respawn
+      for (let i = 0; i < snake.length; i++) {
+        if (snake[i].x === head.x && snake[i].y === head.y) {
+          handleCollision("Tergigit diri sendiri!");
+          return;
+        }
+      }
+
+      snake.unshift(head);
+
+      // Eat Apple -> Trigger KSSR Moral Quiz
+      if (head.x === food.x && head.y === food.y) {
+        synth.playEat();
+        triggerMoralQuiz();
+      } else {
+        snake.pop();
+      }
+
+      renderCanvas();
+    }
+
+    function handleCollision(reason) {
+      synth.playWrong();
+      lives--;
+      updateHUD();
+
+      if (lives <= 0) {
+        endGame(reason);
+      } else {
+        // Safe Respawn in Center
+        snake = [
+          { x: 5, y: 10 },
+          { x: 4, y: 10 },
+          { x: 3, y: 10 }
+        ];
+        dx = 1; dy = 0;
+        nextDx = 1; nextDy = 0;
+      }
+    }
+
+    function renderCanvas() {
+      ctx.fillStyle = '#0a0c16';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Grid Pattern
+      ctx.strokeStyle = 'rgba(0, 240, 255, 0.04)';
+      for (let i = 0; i < canvas.width; i += tileSize) {
+        ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke();
+      }
+
+      // Draw Food (Retro Neon Apple)
+      const fx = food.x * tileSize + tileSize / 2;
+      const fy = food.y * tileSize + tileSize / 2;
+      ctx.fillStyle = '#ff0055';
+      ctx.shadowColor = '#ff0055';
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.arc(fx, fy, tileSize / 2.3, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Apple Leaf
+      ctx.fillStyle = '#00ff66';
+      ctx.fillRect(fx - 2, fy - tileSize / 2, 4, 4);
+      ctx.shadowBlur = 0;
+
+      // Draw Snake Segments
+      snake.forEach((seg, idx) => {
+        if (idx === 0) {
+          ctx.fillStyle = '#00ff66';
+          ctx.shadowColor = '#00ff66';
+          ctx.shadowBlur = 10;
+        } else {
+          ctx.fillStyle = '#00cc52';
+          ctx.shadowBlur = 0;
         }
 
-        function drawInitialCanvas() {
-            ctx.fillStyle = '#020307';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#20e3a2';
-            ctx.fillRect(5 * GRID_SIZE, 10 * GRID_SIZE, GRID_SIZE - 2, GRID_SIZE - 2);
-            ctx.fillRect(4 * GRID_SIZE, 10 * GRID_SIZE, GRID_SIZE - 2, GRID_SIZE - 2);
-            ctx.fillRect(3 * GRID_SIZE, 10 * GRID_SIZE, GRID_SIZE - 2, GRID_SIZE - 2);
-            ctx.fillStyle = '#ff2a6d';
-            ctx.fillRect(12 * GRID_SIZE, 10 * GRID_SIZE, GRID_SIZE - 2, GRID_SIZE - 2);
+        ctx.fillRect(seg.x * tileSize + 1, seg.y * tileSize + 1, tileSize - 2, tileSize - 2);
+
+        // Snake Eye Direction
+        if (idx === 0) {
+          ctx.fillStyle = '#000';
+          let eyeX = seg.x * tileSize + tileSize / 3;
+          let eyeY = seg.y * tileSize + tileSize / 3;
+          if (dx === 1) eyeX += tileSize / 4;
+          if (dy === 1) eyeY += tileSize / 4;
+          ctx.fillRect(eyeX, eyeY, tileSize / 5, tileSize / 5);
+        }
+      });
+    }
+
+    /* ========================================================================
+     * 4. KSSR MORAL QUESTION POPUP LOGIC
+     * ======================================================================== */
+    function triggerMoralQuiz() {
+      isPaused = true;
+      synth.pauseBGM();
+
+      // Pick Random Question from 30 Question Bank
+      currentQuestion = MORAL_QUESTIONS[Math.floor(Math.random() * MORAL_QUESTIONS.length)];
+
+      document.getElementById('question-nilai-badge').innerText = currentQuestion.nilai;
+      document.getElementById('question-text').innerText = currentQuestion.question;
+
+      const optsContainer = document.getElementById('options-container');
+      optsContainer.innerHTML = '';
+
+      const feedbackContainer = document.getElementById('feedback-container');
+      feedbackContainer.classList.add('hidden');
+
+      currentQuestion.options.forEach((optText, idx) => {
+        const btn = document.createElement('button');
+        btn.className = "w-full text-left p-3 bg-slate-900 hover:bg-indigo-900/80 border border-slate-700 hover:border-cyan-400 rounded-xl text-xs sm:text-sm font-semibold transition text-slate-200 flex items-center gap-2";
+        btn.innerHTML = `<span class="w-6 h-6 rounded-full bg-slate-800 text-cyan-400 font-bold flex items-center justify-center text-xs flex-shrink-0">${String.fromCharCode(65 + idx)}</span> <span>${optText}</span>`;
+        btn.onclick = () => handleAnswer(idx);
+        optsContainer.appendChild(btn);
+      });
+
+      document.getElementById('question-modal').classList.remove('hidden');
+    }
+
+    function handleAnswer(selectedIndex) {
+      const isCorrect = selectedIndex === currentQuestion.answer;
+      const feedbackContainer = document.getElementById('feedback-container');
+      const feedbackTitle = document.getElementById('feedback-title');
+      const feedbackExplanation = document.getElementById('feedback-explanation');
+
+      // Disable Option Buttons
+      const buttons = document.querySelectorAll('#options-container button');
+      buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === currentQuestion.answer) {
+          btn.classList.add('bg-emerald-950/80', 'border-emerald-500', 'text-emerald-300');
+        } else if (idx === selectedIndex && !isCorrect) {
+          btn.classList.add('bg-rose-950/80', 'border-rose-500', 'text-rose-300');
+        } else {
+          btn.classList.add('opacity-50');
+        }
+      });
+
+      if (isCorrect) {
+        synth.playCorrect();
+        score += 50;
+        questionsAnsweredCorrect++;
+        updateHUD();
+
+        feedbackContainer.className = "p-3 rounded-xl text-center font-bold text-sm space-y-1 bg-emerald-950/90 border-2 border-emerald-500 text-emerald-300";
+        feedbackTitle.innerText = "⚡ TEPAT! +50 SKOR MORAL";
+      } else {
+        synth.playWrong();
+        feedbackContainer.className = "p-3 rounded-xl text-center font-bold text-sm space-y-1 bg-rose-950/90 border-2 border-rose-500 text-rose-300";
+        feedbackTitle.innerText = "❌ KURANG TEPAT!";
+      }
+
+      feedbackExplanation.innerText = currentQuestion.explanation;
+      feedbackContainer.classList.remove('hidden');
+    }
+
+    document.getElementById('continue-btn').addEventListener('click', () => {
+      document.getElementById('question-modal').classList.add('hidden');
+      spawnFood();
+      isPaused = false;
+      synth.startBGM();
+    });
+
+    /* ========================================================================
+     * 5. GAME OVER & LEADERBOARD SYSTEM
+     * ======================================================================== */
+    async function endGame(reason) {
+      isGameRunning = false;
+      clearInterval(gameLoopTimer);
+      synth.playGameOver();
+
+      document.getElementById('pause-btn').classList.add('hidden');
+
+      const entry = {
+        name: playerName,
+        score: score,
+        questions: questionsAnsweredCorrect,
+        date: new Date().toLocaleDateString()
+      };
+
+      // Try Cloud Save (Firebase) Fallback to LocalStorage
+      let savedCloud = false;
+      if (window.cloudSaveScore) {
+        savedCloud = await window.cloudSaveScore(entry);
+      }
+      if (!savedCloud) {
+        saveLocalScore(entry);
+      }
+
+      document.getElementById('go-player-name').innerText = playerName;
+      document.getElementById('go-final-score').innerText = score;
+      document.getElementById('go-questions-count').innerText = questionsAnsweredCorrect;
+
+      document.getElementById('gameover-modal').classList.remove('hidden');
+    }
+
+    async function displayLeaderboard() {
+      const listContainer = document.getElementById('leaderboard-list');
+      listContainer.innerHTML = '<div class="text-center py-4 text-xs font-arcade text-cyan-400">MEMUATKAN SKOR...</div>';
+
+      let scores = null;
+      if (window.cloudFetchScores) {
+        scores = await window.cloudFetchScores();
+      }
+      if (!scores) {
+        scores = getLocalScores();
+      }
+
+      listContainer.innerHTML = '';
+
+      if (scores.length === 0) {
+        listContainer.innerHTML = '<div class="text-center py-6 text-xs text-slate-400">Tiada rekod skor setakat ini.</div>';
+        return;
+      }
+
+      scores.forEach((entry, idx) => {
+        const item = document.createElement('div');
+        item.className = "flex justify-between items-center bg-slate-900/90 border border-slate-800 p-2.5 rounded-xl text-xs sm:text-sm";
+        
+        let rankBadge = `<span class="w-6 text-center font-bold text-slate-400">${idx + 1}</span>`;
+        if (idx === 0) rankBadge = `<span class="w-6 text-center text-yellow-400 font-bold text-base">🥇</span>`;
+        if (idx === 1) rankBadge = `<span class="w-6 text-center text-slate-300 font-bold text-base">🥈</span>`;
+        if (idx === 2) rankBadge = `<span class="w-6 text-center text-amber-600 font-bold text-base">🥉</span>`;
+
+        let deleteBtn = '';
+        if (isAdmin) {
+          deleteBtn = `<button onclick="deleteScoreEntry('${entry.id || idx}')" class="text-red-400 hover:text-red-300 ml-2 px-1 text-sm" title="Padam Skor">🗑️</button>`;
         }
 
-        function startGame() {
-            audio.init();
-            audio.startBGM();
+        item.innerHTML = `
+          <div class="flex items-center gap-2">
+            ${rankBadge}
+            <div>
+              <div class="font-bold text-cyan-300 uppercase">${escapeHTML(entry.name)}</div>
+              <div class="text-[10px] text-slate-400">${entry.questions || 0} Soalan Betul</div>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <span class="font-arcade text-yellow-400 font-bold text-xs">${entry.score}</span>
+            ${deleteBtn}
+          </div>
+        `;
+        listContainer.appendChild(item);
+      });
+    }
 
-            playerName = document.getElementById('player-name').value.trim() || "Wira Moral";
-            playerDisplay.innerText = playerName;
-            score = 0;
-            correctAnswersCount = 0;
-            scoreDisplay.innerText = score;
+    window.deleteScoreEntry = async function(idOrIndex) {
+      if (!isAdmin) return;
+      if (!confirm("Adakah anda pasti mahu memadam rekod skor ini?")) return;
 
-            snake = [
-                { x: 5, y: 10 },
-                { x: 4, y: 10 },
-                { x: 3, y: 10 }
-            ];
-            dx = 1; dy = 0;
-            nextDx = 1; nextDy = 0;
+      if (window.cloudDeleteSingleScore && typeof idOrIndex === 'string' && idOrIndex.length > 5) {
+        await window.cloudDeleteSingleScore(idOrIndex);
+      } else {
+        deleteSingleLocalScore(parseInt(idOrIndex));
+      }
+      displayLeaderboard();
+    };
 
-            spawnFood();
+    function escapeHTML(str) {
+      return str.replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+      );
+    }
 
-            startScreen.classList.add('hidden');
-            gameoverScreen.classList.add('hidden');
-            leaderboardScreen.classList.add('hidden');
-            quizScreen.classList.add('hidden');
+    /* ========================================================================
+     * 6. CONTROLS & EVENT LISTENERS
+     * ======================================================================== */
+    // Keyboard Input Controls
+    window.addEventListener('keydown', e => {
+      synth.init();
+      switch(e.key) {
+        case 'ArrowUp': case 'w': case 'W':
+          if (dy === 0) { nextDx = 0; nextDy = -1; synth.playTurn(); }
+          break;
+        case 'ArrowDown': case 's': case 'S':
+          if (dy === 0) { nextDx = 0; nextDy = 1; synth.playTurn(); }
+          break;
+        case 'ArrowLeft': case 'a': case 'A':
+          if (dx === 0) { nextDx = -1; nextDy = 0; synth.playTurn(); }
+          break;
+        case 'ArrowRight': case 'd': case 'D':
+          if (dx === 0) { nextDx = 1; nextDy = 0; synth.playTurn(); }
+          break;
+      }
+    });
 
-            isPausedForQuiz = false;
-            if (gameInterval) clearInterval(gameInterval);
-            gameInterval = setInterval(gameLoop, 140);
-        }
+    // Touch Screen Swipe Gestures
+    let touchStartX = 0;
+    let touchStartY = 0;
+    canvas.addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
 
-        function spawnFood() {
-            food.x = Math.floor(Math.random() * TILE_COUNT);
-            food.y = Math.floor(Math.random() * TILE_COUNT);
-            for (let seg of snake) {
-                if (seg.x === food.x && seg.y === food.y) { spawnFood(); break; }
-            }
-        }
+    canvas.addEventListener('touchend', e => {
+      const diffX = e.changedTouches[0].screenX - touchStartX;
+      const diffY = e.changedTouches[0].screenY - touchStartY;
 
-        function gameLoop() {
-            if (isPausedForQuiz) return;
+      if (Math.abs(diffX) > Math.abs(diffY)) {
+        if (diffX > 30 && dx === 0) { nextDx = 1; nextDy = 0; synth.playTurn(); }
+        else if (diffX < -30 && dx === 0) { nextDx = -1; nextDy = 0; synth.playTurn(); }
+      } else {
+        if (diffY > 30 && dy === 0) { nextDx = 0; nextDy = 1; synth.playTurn(); }
+        else if (diffY < -30 && dy === 0) { nextDx = 0; nextDy = -1; synth.playTurn(); }
+      }
+    }, { passive: true });
 
-            dx = nextDx; dy = nextDy;
-            const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+    // On-Screen D-Pad Controls
+    document.getElementById('btn-up').addEventListener('click', () => { if (dy === 0) { nextDx = 0; nextDy = -1; synth.playTurn(); } });
+    document.getElementById('btn-down').addEventListener('click', () => { if (dy === 0) { nextDx = 0; nextDy = 1; synth.playTurn(); } });
+    document.getElementById('btn-left').addEventListener('click', () => { if (dx === 0) { nextDx = -1; nextDy = 0; synth.playTurn(); } });
+    document.getElementById('btn-right').addEventListener('click', () => { if (dx === 0) { nextDx = 1; nextDy = 0; synth.playTurn(); } });
 
-            if (head.x < 0 || head.x >= TILE_COUNT || head.y < 0 || head.y >= TILE_COUNT) return triggerGameOver();
-            for (let i = 0; i < snake.length; i++) {
-                if (snake[i].x === head.x && snake[i].y === head.y) return triggerGameOver();
-            }
+    // Header Controls
+    document.getElementById('bgm-toggle').addEventListener('click', () => {
+      synth.mutedBGM = !synth.mutedBGM;
+      const icon = document.getElementById('bgm-icon');
+      if (synth.mutedBGM) {
+        synth.pauseBGM();
+        icon.className = "fas fa-music-slash text-lg text-slate-500";
+      } else {
+        icon.className = "fas fa-music text-lg text-yellow-300";
+        if (isGameRunning && !isPaused) synth.startBGM();
+      }
+    });
 
-            snake.unshift(head);
+    document.getElementById('sound-toggle').addEventListener('click', () => {
+      synth.mutedSFX = !synth.mutedSFX;
+      const icon = document.getElementById('sound-icon');
+      icon.className = synth.mutedSFX ? "fas fa-volume-mute text-lg text-slate-500" : "fas fa-volume-up text-lg text-cyan-300";
+    });
 
-            if (head.x === food.x && head.y === food.y) {
-                audio.playEatSound();
-                pauseForQuiz();
-            } else {
-                snake.pop();
-            }
+    document.getElementById('pause-btn').addEventListener('click', () => {
+      if (!isGameRunning) return;
+      isPaused = !isPaused;
+      const icon = document.getElementById('pause-icon');
+      if (isPaused) {
+        synth.pauseBGM();
+        icon.className = "fas fa-play text-lg";
+      } else {
+        synth.startBGM();
+        icon.className = "fas fa-pause text-lg";
+      }
+    });
 
-            renderGame();
-        }
+    // Navigation Event Listeners
+    document.getElementById('start-game-btn').addEventListener('click', initGame);
+    document.getElementById('restart-game-btn').addEventListener('click', () => {
+      document.getElementById('gameover-modal').classList.add('hidden');
+      initGame();
+    });
 
-        function renderGame() {
-            ctx.fillStyle = '#020307';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+    document.getElementById('view-leaderboard-btn').addEventListener('click', () => {
+      displayLeaderboard();
+      document.getElementById('leaderboard-modal').classList.remove('hidden');
+    });
 
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.02)';
-            for (let i = 0; i < canvas.width; i += GRID_SIZE) {
-                ctx.beginPath();
-                ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height);
-                ctx.moveTo(0, i); ctx.lineTo(canvas.width, i);
-                ctx.stroke();
-            }
+    document.getElementById('go-leaderboard-btn').addEventListener('click', () => {
+      document.getElementById('gameover-modal').classList.add('hidden');
+      displayLeaderboard();
+      document.getElementById('leaderboard-modal').classList.remove('hidden');
+    });
 
-            ctx.fillStyle = '#ff2a6d';
-            ctx.fillRect(food.x * GRID_SIZE + 2, food.y * GRID_SIZE + 2, GRID_SIZE - 4, GRID_SIZE - 4);
+    document.getElementById('close-leaderboard-btn').addEventListener('click', () => {
+      document.getElementById('leaderboard-modal').classList.add('hidden');
+    });
 
-            snake.forEach((seg, index) => {
-                ctx.fillStyle = (index === 0) ? '#20e3a2' : '#0e9f6e';
-                ctx.fillRect(seg.x * GRID_SIZE + 1, seg.y * GRID_SIZE + 1, GRID_SIZE - 2, GRID_SIZE - 2);
-            });
-        }
+    document.getElementById('lb-play-again-btn').addEventListener('click', () => {
+      document.getElementById('leaderboard-modal').classList.add('hidden');
+      initGame();
+    });
 
-        /* 4. QUIZ LOGIC MATCHING ORIGINAL UI */
-        function pauseForQuiz() {
-            isPausedForQuiz = true;
+    // Teacher Admin Password Login
+    document.getElementById('admin-login-btn').addEventListener('click', () => {
+      document.getElementById('admin-modal').classList.remove('hidden');
+    });
 
-            currentQuestionIndex = Math.floor(Math.random() * moralQuestions.length);
-            const qData = moralQuestions[currentQuestionIndex];
+    document.getElementById('admin-cancel-btn').addEventListener('click', () => {
+      document.getElementById('admin-modal').classList.add('hidden');
+    });
 
-            document.getElementById('quiz-badge-nilai').innerText = qData.nilai;
-            document.getElementById('quiz-question').innerText = qData.q;
+    document.getElementById('admin-submit-btn').addEventListener('click', () => {
+      const pass = document.getElementById('admin-pass-input').value.trim();
+      if (pass === 'adminzulaikha2026') {
+        isAdmin = true;
+        document.getElementById('admin-status-text').innerText = "Pentadbir: Cikgu Zulaikha";
+        document.getElementById('clear-leaderboard-btn').classList.remove('hidden');
+        document.getElementById('admin-modal').classList.add('hidden');
+        alert("Akses Pentadbir Cikgu Zulaikha Dibenarkan!");
+        displayLeaderboard();
+      } else {
+        alert("Kata laluan salah!");
+      }
+    });
 
-            const optionsContainer = document.getElementById('quiz-options');
-            const feedbackBox = document.getElementById('quiz-feedback-box');
+    document.getElementById('clear-leaderboard-btn').addEventListener('click', async () => {
+      if (!isAdmin) return;
+      if (!confirm("AMARAN: Adakah anda pasti mahu memadam KESELURUHAN Papan Skor?")) return;
 
-            feedbackBox.classList.add('hidden');
-            optionsContainer.innerHTML = '';
+      if (window.cloudClearScores) {
+        await window.cloudClearScores();
+      }
+      clearLocalScores();
+      displayLeaderboard();
+      alert("Papan Skor telah dikosongkan!");
+    });
 
-            qData.options.forEach((opt, index) => {
-                const btn = document.createElement('div');
-                btn.className = 'quiz-option';
-                btn.innerText = opt;
-                btn.onclick = () => handleAnswer(index, btn);
-                optionsContainer.appendChild(btn);
-            });
-
-            quizScreen.classList.remove('hidden');
-        }
-
-        function handleAnswer(selectedIndex, selectedBtn) {
-            const qData = moralQuestions[currentQuestionIndex];
-            const feedbackBox = document.getElementById('quiz-feedback-box');
-            const feedbackTitle = document.getElementById('feedback-title');
-            const feedbackDesc = document.getElementById('feedback-desc');
-            const allOptions = document.querySelectorAll('.quiz-option');
-
-            allOptions.forEach(opt => opt.classList.add('disabled'));
-            selectedBtn.classList.add('selected-correct');
-
-            if (selectedIndex === qData.answer) {
-                audio.playCorrectSound();
-                score += 50;
-                correctAnswersCount++;
-                scoreDisplay.innerText = score;
-
-                feedbackTitle.innerText = "⚡ TEPAT! +50 SKOR MORAL";
-                feedbackTitle.style.color = "var(--arcade-green)";
-            } else {
-                audio.playWrongSound();
-                feedbackTitle.innerText = "❌ KURANG TEPAT!";
-                feedbackTitle.style.color = "var(--arcade-red)";
-            }
-
-            feedbackDesc.innerText = qData.desc;
-            feedbackBox.classList.remove('hidden');
-        }
-
-        function resumeFromQuiz() {
-            quizScreen.classList.add('hidden');
-            spawnFood();
-            isPausedForQuiz = false;
-        }
-
-        function triggerGameOver() {
-            clearInterval(gameInterval);
-            audio.stopBGM();
-
-            document.getElementById('go-player-name').innerText = playerName;
-            document.getElementById('go-score').innerText = score;
-            document.getElementById('go-correct-count').innerText = correctAnswersCount;
-
-            gameoverScreen.classList.remove('hidden');
-            saveScoreLocal(playerName, score);
-        }
-
-        /* 5. LOCAL SCOREBOARD ENGINE */
-        function getScoresFromStorage() {
-            return JSON.parse(localStorage.getItem('ular_moral_local_scores') || '[]');
-        }
-
-        function saveScoreLocal(name, newScore) {
-            let scores = getScoresFromStorage();
-            scores.push({ name: name, score: newScore });
-            scores.sort((a, b) => b.score - a.score);
-            scores = scores.slice(0, 10);
-            localStorage.setItem('ular_moral_local_scores', JSON.stringify(scores));
-        }
-
-        function showLeaderboard(previousScreen) {
-            if (previousScreen) previousScreen.classList.add('hidden');
-            leaderboardScreen.classList.remove('hidden');
-            renderScoreTable(getScoresFromStorage());
-        }
-
-        function renderScoreTable(scores) {
-            const tbody = document.getElementById('leaderboard-body');
-            tbody.innerHTML = '';
-
-            if (scores.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Tiada rekod lagi.</td></tr>';
-                return;
-            }
-
-            scores.forEach((entry, idx) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${idx + 1}</td>
-                    <td>${escapeHtml(entry.name)}</td>
-                    <td>${entry.score}</td>
-                    <td class="admin-col ${isAdminLoggedIn ? '' : 'hidden'}">
-                        <button style="background:none; border:none; color:var(--arcade-red); cursor:pointer;" onclick="deleteSingleScore(${idx})">🗑️</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function escapeHtml(text) {
-            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        }
-
-        /* 6. ADMIN CONTROLS */
-        document.getElementById('btn-unlock-admin').addEventListener('click', () => {
-            const pwd = prompt("Masukkan Kata Laluan Pentadbir Cikgu Zulaikha:");
-            if (pwd === "adminzulaikha2026") {
-                isAdminLoggedIn = true;
-                document.getElementById('admin-panel').classList.remove('hidden');
-                showLeaderboard();
-            } else if (pwd !== null) {
-                alert("Kata laluan salah!");
-            }
-        });
-
-        function deleteSingleScore(index) {
-            if (!isAdminLoggedIn) return;
-            let scores = getScoresFromStorage();
-            scores.splice(index, 1);
-            localStorage.setItem('ular_moral_local_scores', JSON.stringify(scores));
-            renderScoreTable(scores);
-        }
-
-        document.getElementById('btn-wipe-scores').addEventListener('click', () => {
-            if (!isAdminLoggedIn) return;
-            if (confirm("Adakah anda pasti mahu memadam KESELURUHAN Papan Skor?")) {
-                localStorage.setItem('ular_moral_local_scores', JSON.stringify([]));
-                renderScoreTable([]);
-            }
-        });
-
-        drawInitialCanvas();
-    </script>
+    // Start Preview Canvas Loop on Load
+    resizeCanvas();
+    drawPreview();
+  </script>
 </body>
 </html>

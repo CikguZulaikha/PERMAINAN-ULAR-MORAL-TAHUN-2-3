@@ -282,15 +282,21 @@
             border-color: #fff;
         }
 
+        .quiz-option.disabled {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
         /* Feedback Popups for Quiz */
         .feedback-banner {
             font-family: 'Press Start 2P', cursive;
-            font-size: 14px;
+            font-size: 11px;
             padding: 10px;
             border-radius: 6px;
             margin-bottom: 12px;
             width: 100%;
             text-align: center;
+            line-height: 1.4;
         }
 
         .feedback-correct {
@@ -438,10 +444,13 @@
                 <div id="quiz-question" class="quiz-question">Soalan akan dipaparkan di sini...</div>
             </div>
 
-            <!-- Optional Feedback Banner -->
+            <!-- Feedback Banner -->
             <div id="quiz-feedback-banner" class="feedback-banner hidden"></div>
 
             <div id="quiz-options" style="width: 100%; max-width: 320px;"></div>
+
+            <!-- Continue Button (Hidden until answered) -->
+            <button id="btn-continue-game" class="btn hidden" style="margin-top: 10px; background: var(--arcade-yellow);">TERUSKAN PERMAINAN ➔</button>
         </div>
 
         <!-- GAME OVER OVERLAY -->
@@ -694,6 +703,7 @@
         const playerNameInput = document.getElementById('player-name');
         const finalScoreText = document.getElementById('final-score-text');
         const gameoverReason = document.getElementById('gameover-reason');
+        const btnContinueGame = document.getElementById('btn-continue-game');
 
         // Admin Elements
         const btnUnlockAdmin = document.getElementById('btn-unlock-admin');
@@ -705,6 +715,7 @@
         document.getElementById('btn-show-scores').addEventListener('click', () => showLeaderboard(startScreen));
         document.getElementById('btn-leaderboard-from-over').addEventListener('click', () => showLeaderboard(gameoverScreen));
         document.getElementById('btn-back-to-start').addEventListener('click', resetToStartScreen);
+        btnContinueGame.addEventListener('click', resumeFromQuiz);
 
         document.getElementById('toggle-audio').addEventListener('click', () => {
             audio.init();
@@ -733,7 +744,7 @@
 
         /* D-Pad Buttons */
         document.getElementById('btn-up').addEventListener('click', () => { if (dy === 0) { nextDx = 0; nextDy = -1; } });
-        document.getElementById('btn-down').addEventListener('click', () => { if (dy === 0) { nextDx = 0; nextDy = 1; } });
+        document.getElementById('btn-down').addEventListener('click', () => { if (dx === 0) { nextDx = 0; nextDy = 1; } });
         document.getElementById('btn-left').addEventListener('click', () => { if (dx === 0) { nextDx = -1; nextDy = 0; } });
         document.getElementById('btn-right').addEventListener('click', () => { if (dx === 0) { nextDx = 1; nextDy = 0; } });
 
@@ -900,7 +911,7 @@
         }
 
         /* ==========================================================================
-           4. QUIZ MECHANIC WITH RETRO FEEDBACK VIBES
+           4. QUIZ MECHANIC WITH MANUAL "TERUSKAN PERMAINAN" BUTTON
            ========================================================================== */
         function pauseForQuiz() {
             isPausedForQuiz = true;
@@ -911,7 +922,9 @@
             document.getElementById('quiz-question').innerText = qData.q;
             const optionsContainer = document.getElementById('quiz-options');
             const feedbackBanner = document.getElementById('quiz-feedback-banner');
+            
             feedbackBanner.classList.add('hidden');
+            btnContinueGame.classList.add('hidden');
             optionsContainer.innerHTML = '';
 
             qData.options.forEach((opt, index) => {
@@ -928,42 +941,35 @@
         function handleAnswer(selectedIndex) {
             const qData = moralQuestions[currentQuestionIndex];
             const feedbackBanner = document.getElementById('quiz-feedback-banner');
+            const optionBtns = document.querySelectorAll('.quiz-option');
+
+            // Disable option buttons after picking
+            optionBtns.forEach(btn => btn.classList.add('disabled'));
 
             if (selectedIndex === qData.answer) {
-                // Correct Answer
+                // Correct Answer -> +10 Score
                 audio.playCorrectSound();
                 score += 10;
                 scoreDisplay.innerText = score;
                 
                 feedbackBanner.className = 'feedback-banner feedback-correct';
-                feedbackBanner.innerText = '✅ SYABAS! JAWAPAN BETUL (+10 SKOR)';
-                feedbackBanner.classList.remove('hidden');
-
-                setTimeout(() => {
-                    quizScreen.classList.add('hidden');
-                    spawnFood();
-                    isPausedForQuiz = false;
-                }, 800);
-
+                feedbackBanner.innerText = '✅ TEPAT SEKALI! (+10 SKOR)';
             } else {
-                // Incorrect Answer
+                // Incorrect Answer -> No Life Loss! Just no score gain.
                 audio.playWrongSound();
-                lives--;
-                updateLivesUI();
-
+                const correctText = qData.options[qData.answer];
                 feedbackBanner.className = 'feedback-banner feedback-wrong';
-                feedbackBanner.innerText = '❌ KURANG TEPAT! (-1 NYAWA)';
-                feedbackBanner.classList.remove('hidden');
-
-                setTimeout(() => {
-                    quizScreen.classList.add('hidden');
-                    if (lives <= 0) {
-                        triggerGameOver("Nyawa telah habis akibat soalan moral yang salah!");
-                    } else {
-                        isPausedForQuiz = false;
-                    }
-                }, 1000);
+                feedbackBanner.innerText = `❌ KURANG TEPAT!\nJawapan betul: ${correctText}`;
             }
+
+            feedbackBanner.classList.remove('hidden');
+            btnContinueGame.classList.remove('hidden');
+        }
+
+        function resumeFromQuiz() {
+            quizScreen.classList.add('hidden');
+            spawnFood();
+            isPausedForQuiz = false;
         }
 
         function triggerGameOver(reason) {

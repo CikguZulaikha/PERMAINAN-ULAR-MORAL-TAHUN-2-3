@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ular Wira Moral - Permainan Retro KSSR</title>
-    <!-- Google Fonts for Retro Aesthetic -->
+    <!-- Google Fonts for 8-Bit Retro Aesthetic -->
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0d0f18;
+            --bg-color: #090a10;
             --arcade-green: #39ff14;
             --arcade-yellow: #fffb00;
             --arcade-red: #ff0055;
             --arcade-blue: #00dfff;
             --arcade-purple: #9d00ff;
             --text-gold: #f4c430;
-            --panel-bg: rgba(16, 20, 38, 0.92);
+            --panel-bg: rgba(14, 18, 32, 0.95);
         }
 
         * {
@@ -29,9 +29,9 @@
         body {
             background-color: var(--bg-color);
             background-image: 
-                radial-gradient(circle at 50% 50%, #1a1e36 0%, #080910 100%),
-                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+                radial-gradient(circle at 50% 50%, #171b30 0%, #05060a 100%),
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
             background-size: 100% 100%, 20px 20px, 20px 20px;
             color: #fff;
             font-family: 'Press Start 2P', cursive;
@@ -44,47 +44,47 @@
             padding: 10px;
         }
 
-        /* Scanline effect */
+        /* Scanline Overlay */
         body::before {
             content: " ";
             display: block;
             position: fixed;
             top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
             background-size: 100% 4px;
             z-index: 100;
             pointer-events: none;
             opacity: 0.6;
         }
 
-        /* Top Header & Sound Controls */
+        /* Top Bar */
         header {
             width: 100%;
-            max-width: 500px;
+            max-width: 480px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 12px;
-            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 14px;
+            background: rgba(0, 0, 0, 0.8);
             border: 2px solid var(--arcade-blue);
             border-radius: 8px;
-            margin-bottom: 10px;
-            box-shadow: 0 0 10px rgba(0, 223, 255, 0.3);
+            margin-bottom: 8px;
+            box-shadow: 0 0 12px rgba(0, 223, 255, 0.3);
         }
 
         .header-title {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--arcade-yellow);
             text-shadow: 2px 2px #000;
         }
 
         .audio-btn {
-            background: #222;
+            background: #111;
             border: 2px solid var(--arcade-green);
             color: var(--arcade-green);
             padding: 6px 10px;
             font-family: 'Press Start 2P', cursive;
-            font-size: 10px;
+            font-size: 9px;
             cursor: pointer;
             border-radius: 4px;
             transition: all 0.2s;
@@ -94,39 +94,46 @@
             transform: scale(0.95);
         }
 
-        /* Main Container */
+        /* Game Frame */
         #game-container {
             position: relative;
             width: 100%;
-            max-width: 500px;
+            max-width: 480px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        /* Score Display Bar */
+        /* HUD Display Bar with Lives */
         .hud {
             width: 100%;
             display: flex;
             justify-content: space-between;
-            background: rgba(0,0,0,0.8);
-            border: 2px solid var(--arcade-purple);
+            align-items: center;
+            background: rgba(0,0,0,0.9);
+            border: 3px solid var(--arcade-purple);
             border-bottom: none;
-            padding: 10px;
-            font-size: 11px;
+            padding: 10px 12px;
+            font-size: 10px;
             color: #fff;
             border-radius: 8px 8px 0 0;
         }
 
-        .hud span {
+        .hud span.val {
             color: var(--arcade-green);
         }
 
-        /* Canvas Screen */
+        .lives-container {
+            color: var(--arcade-red);
+            letter-spacing: 2px;
+            font-size: 12px;
+        }
+
+        /* Canvas Game Screen */
         canvas {
-            background-color: #05070a;
+            background-color: #040508;
             border: 3px solid var(--arcade-purple);
-            box-shadow: 0 0 15px rgba(157, 0, 255, 0.4);
+            box-shadow: 0 0 18px rgba(157, 0, 255, 0.4);
             display: block;
             width: 100%;
             aspect-ratio: 1 / 1;
@@ -147,7 +154,7 @@
             padding: 20px;
             text-align: center;
             z-index: 20;
-            box-shadow: 0 0 20px rgba(0, 223, 255, 0.5);
+            box-shadow: 0 0 25px rgba(0, 223, 255, 0.5);
             max-height: 100%;
             overflow-y: auto;
         }
@@ -157,9 +164,9 @@
         }
 
         h1.game-title {
-            font-size: 20px;
+            font-size: 18px;
             color: var(--arcade-yellow);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             text-shadow: 3px 3px var(--arcade-red);
             line-height: 1.4;
         }
@@ -168,28 +175,27 @@
             font-family: 'VT323', monospace;
             font-size: 20px;
             color: var(--arcade-blue);
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
-        /* Inputs and Form Elements */
         .input-group {
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             width: 100%;
-            max-width: 300px;
+            max-width: 280px;
         }
 
         .input-group label {
             display: block;
-            font-size: 10px;
+            font-size: 9px;
             margin-bottom: 8px;
             color: #fff;
         }
 
         input[type="text"], input[type="password"] {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             font-family: 'Press Start 2P', cursive;
-            font-size: 11px;
+            font-size: 10px;
             background: #000;
             border: 2px solid var(--arcade-green);
             color: #fff;
@@ -208,14 +214,14 @@
             background: var(--arcade-green);
             color: #000;
             border: none;
-            padding: 12px 20px;
+            padding: 12px 18px;
             font-family: 'Press Start 2P', cursive;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: bold;
             cursor: pointer;
             margin: 6px 0;
             width: 100%;
-            max-width: 280px;
+            max-width: 260px;
             border-radius: 4px;
             box-shadow: 0 4px #009900;
             transition: all 0.1s;
@@ -243,31 +249,30 @@
             box-shadow: 0 4px #990033;
         }
 
-        /* Quiz / Modal Specifics */
+        /* Quiz Box */
         .quiz-card {
             background: #000;
             border: 2px solid var(--arcade-yellow);
-            padding: 15px;
+            padding: 14px;
             border-radius: 8px;
             width: 100%;
-            box-shadow: 0 0 10px rgba(255, 251, 0, 0.3);
-            margin-bottom: 15px;
+            box-shadow: 0 0 12px rgba(255, 251, 0, 0.3);
+            margin-bottom: 12px;
         }
 
         .quiz-question {
             font-family: 'VT323', monospace;
             font-size: 22px;
             color: #fff;
-            margin-bottom: 15px;
             line-height: 1.3;
         }
 
         .quiz-option {
-            background: #151828;
+            background: #121524;
             border: 2px solid var(--arcade-blue);
             color: #fff;
-            padding: 12px;
-            margin: 8px 0;
+            padding: 10px 12px;
+            margin: 6px 0;
             width: 100%;
             font-family: 'VT323', monospace;
             font-size: 20px;
@@ -287,7 +292,7 @@
             width: 100%;
             max-width: 360px;
             border-collapse: collapse;
-            margin: 15px 0;
+            margin: 12px 0;
             font-family: 'VT323', monospace;
             font-size: 20px;
         }
@@ -311,23 +316,23 @@
             color: var(--arcade-red);
             font-size: 16px;
             cursor: pointer;
-            padding: 0 5px;
+            padding: 0 4px;
         }
 
-        /* On-Screen Mobile D-Pad Controls */
+        /* D-Pad Controls */
         #dpad {
             display: grid;
-            grid-template-columns: repeat(3, 55px);
-            grid-template-rows: repeat(3, 55px);
+            grid-template-columns: repeat(3, 52px);
+            grid-template-rows: repeat(3, 52px);
             gap: 5px;
-            margin-top: 15px;
+            margin-top: 12px;
         }
 
         .dbtn {
-            background: #1c2138;
+            background: #181c30;
             border: 2px solid var(--arcade-blue);
             color: #fff;
-            font-size: 20px;
+            font-size: 18px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -346,9 +351,8 @@
         #btn-right { grid-column: 3; grid-row: 2; }
         #btn-down { grid-column: 2; grid-row: 3; }
 
-        /* Footer Credits */
         footer {
-            margin-top: 15px;
+            margin-top: 10px;
             font-size: 8px;
             color: #888;
             text-align: center;
@@ -360,9 +364,8 @@
             color: var(--text-gold);
         }
 
-        /* Cloud Admin Settings Panel */
         .admin-panel {
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.95);
             border: 1px dashed var(--arcade-red);
             padding: 10px;
             border-radius: 6px;
@@ -381,19 +384,20 @@
 </head>
 <body>
 
-    <!-- Top Header Bar -->
+    <!-- Top Header -->
     <header>
         <div class="header-title">🐍 ULAR WIRA MORAL</div>
         <button id="toggle-audio" class="audio-btn">🔊 BGM: ON</button>
     </header>
 
-    <!-- Game Canvas & Screens Container -->
+    <!-- Game Container -->
     <div id="game-container">
         
-        <!-- HUD Bar -->
+        <!-- HUD Bar with Lives -->
         <div class="hud">
-            <div>SKOR: <span id="score-display">0</span></div>
-            <div>PEMAIN: <span id="player-display">-</span></div>
+            <div>SKOR: <span id="score-display" class="val">0</span></div>
+            <div>NYAWA: <span id="lives-display" class="lives-container">❤️ ❤️ ❤️</span></div>
+            <div>PEMAIN: <span id="player-display" class="val">-</span></div>
         </div>
 
         <!-- Canvas Game Screen -->
@@ -402,7 +406,7 @@
         <!-- START SCREEN OVERLAY -->
         <div id="start-screen" class="overlay">
             <h1 class="game-title">ULAR WIRA<br>MORAL</h1>
-            <p class="subtitle">KSSR Pendidikan Moral Tahun 1-6</p>
+            <p class="subtitle">KSSR Pendidikan Moral (3 Nyawa)</p>
             
             <div class="input-group">
                 <label for="player-name">MASUKKAN NAMA WIRA:</label>
@@ -416,13 +420,13 @@
         <!-- QUIZ OVERLAY -->
         <div id="quiz-screen" class="overlay hidden">
             <div class="quiz-card">
-                <p style="font-size: 10px; color: var(--arcade-yellow); margin-bottom: 8px;">SOALAN MORAL!</p>
-                <div id="quiz-question" class="quiz-question">Soalan akan dipaparkan di sini...</div>
+                <p style="font-size: 9px; color: var(--arcade-yellow); margin-bottom: 6px;">SOALAN MORAL (Epal Murni)</p>
+                <div id="quiz-question" class="quiz-question">Soalan dipaparkan di sini...</div>
             </div>
             <div id="quiz-options" style="width: 100%; max-width: 320px;"></div>
         </div>
 
-        <!-- GAME OVER SCREEN OVERLAY -->
+        <!-- GAME OVER OVERLAY -->
         <div id="gameover-screen" class="overlay hidden">
             <h1 class="game-title" style="color: var(--arcade-red);">TAMAT PERMAINAN!</h1>
             <p class="subtitle" id="final-score-text">Skor Akhir: 0</p>
@@ -434,7 +438,7 @@
 
         <!-- LEADERBOARD OVERLAY -->
         <div id="leaderboard-screen" class="overlay hidden">
-            <h1 class="game-title" style="font-size: 16px;">🏆 PAPAN SKOR GLOBAL</h1>
+            <h1 class="game-title" style="font-size: 15px;">🏆 PAPAN SKOR GLOBAL</h1>
             
             <div style="width: 100%; max-height: 180px; overflow-y: auto;">
                 <table class="leaderboard-table">
@@ -443,21 +447,19 @@
                             <th>#</th>
                             <th>NAMA</th>
                             <th>SKOR</th>
-                            <th class="admin-col hidden">TINDAKAN</th>
+                            <th class="admin-col hidden">PADAM</th>
                         </tr>
                     </thead>
                     <tbody id="leaderboard-body">
-                        <!-- Score rows generated dynamically -->
+                        <!-- Dynamic rows -->
                     </tbody>
                 </table>
             </div>
 
-            <!-- Admin Controls Unlock -->
             <div id="admin-controls-area">
-                <button id="btn-unlock-admin" style="background: none; border: none; color: #555; font-size: 9px; cursor: pointer; text-decoration: underline; margin-top: 5px;">Akses Cikgu Zulaikha</button>
+                <button id="btn-unlock-admin" style="background: none; border: none; color: #555; font-size: 8px; cursor: pointer; text-decoration: underline; margin-top: 5px;">Akses Cikgu Zulaikha</button>
             </div>
 
-            <!-- Admin Options Panel (Hidden by Default) -->
             <div id="admin-panel" class="admin-panel hidden">
                 <p style="color: var(--arcade-yellow); font-weight: bold; margin-bottom: 5px;">KAWALAN PENTADBIR CIKGU ZULAIKHA</p>
                 <button id="btn-wipe-scores" class="btn btn-danger" style="font-size: 8px; padding: 6px;">PADAM SEMUA SKOR</button>
@@ -470,12 +472,12 @@
                 </div>
             </div>
 
-            <button id="btn-back-to-start" class="btn" style="margin-top: 15px;">MAIN LAGI</button>
+            <button id="btn-back-to-start" class="btn" style="margin-top: 12px;">MAIN LAGI</button>
         </div>
 
     </div>
 
-    <!-- Mobile On-Screen D-Pad Controls -->
+    <!-- Mobile D-Pad Controls -->
     <div id="dpad">
         <div class="dbtn" id="btn-up">▲</div>
         <div class="dbtn" id="btn-left">◄</div>
@@ -488,10 +490,9 @@
         © 2026 Ular Wira Moral | Direka khas oleh <span>Cikgu Zulaikha</span>.<br>Hak Cipta Terpelihara.
     </footer>
 
-    <!-- Game Logic & Sound Engine Script -->
     <script>
         /* ==========================================================================
-           1. HARDCODED JSONBIN CLOUD CONFIGURATION (PERMANENT)
+           1. JSONBIN CLOUD CONFIGURATION (PERMANENT)
            ========================================================================== */
         const DEFAULT_BIN_ID = "6ace5e58ac6210605a2e4877";
         const DEFAULT_API_KEY = "$2a$10$twPE5s7RVo1aAw2MgVGNvOaptUDouHHY5DoR343PCisu.GlOJoSva";
@@ -536,7 +537,7 @@
         ];
 
         /* ==========================================================================
-           3. WEB AUDIO API RETRO SOUND SYNTHESIZER
+           3. WEB AUDIO RETRO SYNTHESIZER
            ========================================================================== */
         class RetroAudioEngine {
             constructor() {
@@ -562,7 +563,7 @@
                 const gain = this.ctx.createGain();
                 osc.type = 'square';
                 osc.frequency.setValueAtTime(300, this.ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.1);
+                osc.frequency.exponentialRampToValueAtTime(850, this.ctx.currentTime + 0.1);
                 gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
                 gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.1);
                 osc.connect(gain);
@@ -571,13 +572,28 @@
                 osc.stop(this.ctx.currentTime + 0.1);
             }
 
+            playHitSound() {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, this.ctx.currentTime);
+                osc.frequency.linearRampToValueAtTime(90, this.ctx.currentTime + 0.2);
+                gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.2);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.2);
+            }
+
             playWrongSound() {
                 if (!this.ctx) return;
                 const osc = this.ctx.createOscillator();
                 const gain = this.ctx.createGain();
                 osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(180, this.ctx.currentTime);
-                osc.frequency.linearRampToValueAtTime(80, this.ctx.currentTime + 0.25);
+                osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+                osc.frequency.setValueAtTime(100, this.ctx.currentTime + 0.1);
                 gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
                 gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.25);
                 osc.connect(gain);
@@ -588,7 +604,7 @@
 
             playGameOverSound() {
                 if (!this.ctx) return;
-                const notes = [300, 250, 200, 150];
+                const notes = [280, 230, 180, 130];
                 notes.forEach((freq, idx) => {
                     const osc = this.ctx.createOscillator();
                     const gain = this.ctx.createGain();
@@ -640,7 +656,7 @@
         const audio = new RetroAudioEngine();
 
         /* ==========================================================================
-           4. GAME STATE & CANVAS ENGINE
+           4. GAME CANVAS ENGINE & LIVES SYSTEM
            ========================================================================== */
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -653,6 +669,7 @@
         let nextDx = 1, nextDy = 0;
         let food = { x: 5, y: 5 };
         let score = 0;
+        let lives = 3;
         let playerName = "";
         let gameInterval = null;
         let isPausedForQuiz = false;
@@ -661,6 +678,7 @@
 
         // UI DOM Elements
         const scoreDisplay = document.getElementById('score-display');
+        const livesDisplay = document.getElementById('lives-display');
         const playerDisplay = document.getElementById('player-display');
         const startScreen = document.getElementById('start-screen');
         const quizScreen = document.getElementById('quiz-screen');
@@ -670,13 +688,13 @@
         const finalScoreText = document.getElementById('final-score-text');
         const quizFeedbackText = document.getElementById('quiz-feedback');
 
-        // Admin Elements
+        // Admin DOM Elements
         const btnUnlockAdmin = document.getElementById('btn-unlock-admin');
         const adminPanel = document.getElementById('admin-panel');
         const cfgBinIdInput = document.getElementById('cfg-bin-id');
         const cfgApiKeyInput = document.getElementById('cfg-api-key');
 
-        /* Initialize Game Inputs */
+        // Event Listeners
         document.getElementById('btn-start').addEventListener('click', startGame);
         document.getElementById('btn-replay').addEventListener('click', resetToStartScreen);
         document.getElementById('btn-show-scores').addEventListener('click', () => fetchAndShowLeaderboard(startScreen));
@@ -689,7 +707,7 @@
             document.getElementById('toggle-audio').innerText = active ? "🔊 BGM: ON" : "🔇 BGM: OFF";
         });
 
-        /* Directional Key Controls */
+        /* Keyboard Controls */
         window.addEventListener('keydown', e => {
             audio.init();
             switch (e.key) {
@@ -708,11 +726,17 @@
             }
         });
 
-        /* On-Screen Touch D-Pad */
+        /* Mobile D-Pad Controls */
         document.getElementById('btn-up').addEventListener('click', () => { if (dy === 0) { nextDx = 0; nextDy = -1; } });
         document.getElementById('btn-down').addEventListener('click', () => { if (dy === 0) { nextDx = 0; nextDy = 1; } });
         document.getElementById('btn-left').addEventListener('click', () => { if (dx === 0) { nextDx = -1; nextDy = 0; } });
         document.getElementById('btn-right').addEventListener('click', () => { if (dx === 0) { nextDx = 1; nextDy = 0; } });
+
+        function updateLivesDisplay() {
+            let hearts = "";
+            for (let i = 0; i < lives; i++) hearts += "❤️ ";
+            livesDisplay.innerText = hearts.trim() || "💀";
+        }
 
         function resetToStartScreen() {
             clearInterval(gameInterval);
@@ -725,14 +749,13 @@
         }
 
         function drawInitialCanvas() {
-            ctx.fillStyle = '#05070a';
+            ctx.fillStyle = '#040508';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            // Draw dummy snake preview
+            // Draw dummy preview
             ctx.fillStyle = '#39ff14';
             ctx.fillRect(5 * GRID_SIZE, 10 * GRID_SIZE, GRID_SIZE - 2, GRID_SIZE - 2);
             ctx.fillRect(4 * GRID_SIZE, 10 * GRID_SIZE, GRID_SIZE - 2, GRID_SIZE - 2);
             ctx.fillRect(3 * GRID_SIZE, 10 * GRID_SIZE, GRID_SIZE - 2, GRID_SIZE - 2);
-            // Food
             ctx.fillStyle = '#ff0055';
             ctx.fillRect(12 * GRID_SIZE, 10 * GRID_SIZE, GRID_SIZE - 2, GRID_SIZE - 2);
         }
@@ -744,16 +767,11 @@
             playerName = playerNameInput.value.trim() || "Wira Moral";
             playerDisplay.innerText = playerName;
             score = 0;
+            lives = 3;
             scoreDisplay.innerText = score;
+            updateLivesDisplay();
 
-            snake = [
-                { x: 5, y: 10 },
-                { x: 4, y: 10 },
-                { x: 3, y: 10 }
-            ];
-            dx = 1; dy = 0;
-            nextDx = 1; nextDy = 0;
-
+            respawnSnake();
             spawnFood();
 
             startScreen.classList.add('hidden');
@@ -763,18 +781,39 @@
 
             isPausedForQuiz = false;
             if (gameInterval) clearInterval(gameInterval);
-            gameInterval = setInterval(gameLoop, 140);
+            gameInterval = setInterval(gameLoop, 130);
+        }
+
+        function respawnSnake() {
+            snake = [
+                { x: 10, y: 10 },
+                { x: 9, y: 10 },
+                { x: 8, y: 10 }
+            ];
+            dx = 1; dy = 0;
+            nextDx = 1; nextDy = 0;
         }
 
         function spawnFood() {
             food.x = Math.floor(Math.random() * TILE_COUNT);
             food.y = Math.floor(Math.random() * TILE_COUNT);
-            // Ensure food doesn't spawn on snake body
             for (let seg of snake) {
                 if (seg.x === food.x && seg.y === food.y) {
                     spawnFood();
                     break;
                 }
+            }
+        }
+
+        function handleCollisionLoss(reason) {
+            audio.playHitSound();
+            lives--;
+            updateLivesDisplay();
+
+            if (lives <= 0) {
+                handleGameOver(reason);
+            } else {
+                respawnSnake();
             }
         }
 
@@ -786,21 +825,21 @@
 
             const head = { x: snake[0].x + dx, y: snake[0].y + dy };
 
-            // Wall Collisions
+            // Wall Collision Check (Deduct Life)
             if (head.x < 0 || head.x >= TILE_COUNT || head.y < 0 || head.y >= TILE_COUNT) {
-                return handleGameOver("Ular melanggar sempadan!");
+                return handleCollisionLoss("Ular melanggar sempadan dinding!");
             }
 
-            // Self Collisions
+            // Self Collision Check (Deduct Life)
             for (let i = 0; i < snake.length; i++) {
                 if (snake[i].x === head.x && snake[i].y === head.y) {
-                    return handleGameOver("Ular tergigit diri sendiri!");
+                    return handleCollisionLoss("Ular tergigit diri sendiri!");
                 }
             }
 
             snake.unshift(head);
 
-            // Eat Apple Trigger
+            // Eat Apple
             if (head.x === food.x && head.y === food.y) {
                 audio.playEatSound();
                 pauseForQuiz();
@@ -812,11 +851,10 @@
         }
 
         function renderGame() {
-            // Clear Screen
-            ctx.fillStyle = '#05070a';
+            ctx.fillStyle = '#040508';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Draw Grid Lines (Subtle)
+            // Grid Lines
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
             for (let i = 0; i < canvas.width; i += GRID_SIZE) {
                 ctx.beginPath();
@@ -825,27 +863,27 @@
                 ctx.stroke();
             }
 
-            // Draw Food (Retro Apple)
+            // Food (Glow Apple)
             ctx.fillStyle = '#ff0055';
             ctx.shadowColor = '#ff0055';
             ctx.shadowBlur = 10;
             ctx.fillRect(food.x * GRID_SIZE + 2, food.y * GRID_SIZE + 2, GRID_SIZE - 4, GRID_SIZE - 4);
             ctx.shadowBlur = 0;
 
-            // Draw Snake (Neon Hero Snake)
+            // Snake Body
             snake.forEach((seg, index) => {
                 if (index === 0) {
-                    ctx.fillStyle = '#39ff14'; // Bright Snake Head
+                    ctx.fillStyle = '#39ff14';
                     ctx.shadowColor = '#39ff14';
                     ctx.shadowBlur = 8;
                 } else {
-                    ctx.fillStyle = '#22aa0f'; // Body Segment
+                    ctx.fillStyle = '#1eb800';
                     ctx.shadowBlur = 0;
                 }
 
                 ctx.fillRect(seg.x * GRID_SIZE + 1, seg.y * GRID_SIZE + 1, GRID_SIZE - 2, GRID_SIZE - 2);
 
-                // Head Eyes Direction
+                // Snake Eyes
                 if (index === 0) {
                     ctx.fillStyle = '#000';
                     let eyeX = seg.x * GRID_SIZE + 5;
@@ -858,12 +896,10 @@
         }
 
         /* ==========================================================================
-           5. QUIZ MECHANIC ON APPLE EATEN
+           5. MORAL QUIZ MECHANIC
            ========================================================================== */
         function pauseForQuiz() {
             isPausedForQuiz = true;
-            
-            // Randomly select question
             currentQuestionIndex = Math.floor(Math.random() * moralQuestions.length);
             const qData = moralQuestions[currentQuestionIndex];
 
@@ -887,15 +923,22 @@
             quizScreen.classList.add('hidden');
 
             if (selectedIndex === qData.answer) {
-                // Correct Answer
                 score += 10;
                 scoreDisplay.innerText = score;
                 spawnFood();
                 isPausedForQuiz = false;
             } else {
-                // Incorrect Answer
                 audio.playWrongSound();
-                handleGameOver("Jawapan kurang tepat! Sentiasa amalkan nilai murni.");
+                lives--;
+                updateLivesDisplay();
+
+                if (lives <= 0) {
+                    handleGameOver("Jawapan kurang tepat! Nyawa anda telah habis.");
+                } else {
+                    alert("Jawapan kurang tepat! 1 Nyawa hilang (❤️ -1). Teruskan Wira!");
+                    spawnFood();
+                    isPausedForQuiz = false;
+                }
             }
         }
 
@@ -912,7 +955,7 @@
         }
 
         /* ==========================================================================
-           6. JSONBIN.IO GLOBAL LEADERBOARD ENGINE
+           6. JSONBIN.IO GLOBAL LEADERBOARD & PERMANENT DELETE FIX
            ========================================================================== */
         async function fetchOnlineScores() {
             if (!jsonbinBinId || !jsonbinApiKey) {
@@ -924,11 +967,17 @@
                     method: 'GET',
                     headers: { 'X-Master-Key': jsonbinApiKey }
                 });
-                if (!res.ok) throw new Error("Gagal menyambung ke JSONBin");
+                if (!res.ok) throw new Error("JSONBin fetch error");
                 const data = await res.json();
-                return Array.isArray(data.record) ? data.record : [];
+                
+                // FIXED: Return whatever JSONBin has, even if it is an empty array []
+                if (Array.isArray(data.record)) {
+                    localStorage.setItem('ular_local_scores', JSON.stringify(data.record));
+                    return data.record;
+                }
+                return [];
             } catch (err) {
-                console.warn("Using Local Fallback Scores:", err);
+                console.warn("Falling back to local cached scores:", err);
                 return JSON.parse(localStorage.getItem('ular_local_scores') || '[]');
             }
         }
@@ -937,11 +986,9 @@
             let currentScores = await fetchOnlineScores();
             currentScores.push({ name: name, score: newScore, date: new Date().toLocaleDateString() });
 
-            // Sort Descending & Keep Top 15
             currentScores.sort((a, b) => b.score - a.score);
             currentScores = currentScores.slice(0, 15);
 
-            // Save to Local Cache
             localStorage.setItem('ular_local_scores', JSON.stringify(currentScores));
 
             if (!jsonbinBinId || !jsonbinApiKey) return;
@@ -956,7 +1003,7 @@
                     body: JSON.stringify(currentScores)
                 });
             } catch (err) {
-                console.error("Gagal kemaskini skor awan:", err);
+                console.error("Cloud save failed:", err);
             }
         }
 
@@ -975,8 +1022,8 @@
             const tbody = document.getElementById('leaderboard-body');
             tbody.innerHTML = '';
 
-            if (scores.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Tiada rekod lagi.</td></tr>';
+            if (!scores || scores.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#888;">Papan skor kosong.</td></tr>';
                 return;
             }
 
@@ -993,7 +1040,6 @@
                 tbody.appendChild(tr);
             });
 
-            // Update column headers for Admin
             document.querySelectorAll('.admin-col').forEach(el => {
                 if (isAdminLoggedIn) el.classList.remove('hidden');
                 else el.classList.add('hidden');
@@ -1005,7 +1051,7 @@
         }
 
         /* ==========================================================================
-           7. CIKGU ZULAIKHA EXCLUSIVE ADMIN MANAGEMENT
+           7. CIKGU ZULAIKHA ADMIN CONTROLS
            ========================================================================== */
         btnUnlockAdmin.addEventListener('click', () => {
             const pwd = prompt("Masukkan Kata Laluan Pentadbir Cikgu Zulaikha:");
@@ -1028,8 +1074,10 @@
             let currentScores = await fetchOnlineScores();
             currentScores.splice(index, 1);
 
+            // Update Local Cache immediately
             localStorage.setItem('ular_local_scores', JSON.stringify(currentScores));
 
+            // Sync deleted array to JSONBin Cloud
             if (jsonbinBinId && jsonbinApiKey) {
                 try {
                     await fetch(`https://api.jsonbin.io/v3/b/${jsonbinBinId}`, {
@@ -1052,7 +1100,8 @@
             if (!isAdminLoggedIn) return;
             if (!confirm("AMARAN: Adakah anda pasti mahu memadam KESELURUHAN Papan Skor?")) return;
 
-            localStorage.setItem('ular_local_scores', JSON.stringify([]));
+            const emptyScores = [];
+            localStorage.setItem('ular_local_scores', JSON.stringify(emptyScores));
 
             if (jsonbinBinId && jsonbinApiKey) {
                 try {
@@ -1062,14 +1111,14 @@
                             'Content-Type': 'application/json',
                             'X-Master-Key': jsonbinApiKey
                         },
-                        body: JSON.stringify([])
+                        body: JSON.stringify(emptyScores)
                     });
                 } catch (e) {
-                    console.error("Gagal mengosongkan papan skor cloud:", e);
+                    console.error("Gagal mengosongkan cloud:", e);
                 }
             }
 
-            renderScoreTable([]);
+            renderScoreTable(emptyScores);
             alert("Papan Skor telah dikosongkan sepenuhnya!");
         });
 
@@ -1089,7 +1138,7 @@
             }
         });
 
-        // Initial canvas setup render on page load
+        // Initial setup
         drawInitialCanvas();
     </script>
 </body>

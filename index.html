@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Ular Wira Moral - Permainan Retro Arcade</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    body {
+      font-family: 'Fredoka', sans-serif;
+      background-color: #0d0e15;
+      color: #fff;
+      touch-action: manipulation;
+    }
+
+    .font-arcade {
+      font-family: 'Press Start 2P', monospace;
+    }
+
+    /* Scanlines effect for CRT arcade feel */
+    .crt::before {
+      content: " ";
+      display: block;
+      position: absolute;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+      z-index: 10;
+      background-size: 100% 4px, 6px 100%;
+      pointer-events: none;
+    }
+
+    /* Glowing Neon Shadows */
+    .neon-text-green {
+      text-shadow: 0 0 5px #00ff66, 0 0 10px #00ff66, 0 0 20px #00ff66;
+    }
+    .neon-text-yellow {
+      text-shadow: 0 0 5px #ffcc00, 0 0 10px #ffcc00, 0 0 20px #ffcc00;
+    }
+    .neon-text-pink {
+      text-shadow: 0 0 5px #ff007f, 0 0 10px #ff007f, 0 0 20px #ff007f;
+    }
+    
+    .arcade-card {
+      background: rgba(20, 24, 45, 0.95);
+      border: 3px solid #00f0ff;
+      border-radius: 16px;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+    }
+
+    .arcade-btn {
+      transition: transform 0.1s, box-shadow 0.1s;
+      border-bottom: 5px solid rgba(0, 0, 0, 0.4);
+    }
+    .arcade-btn:active {
+      transform: translateY(3px);
+      border-bottom: 2px solid rgba(0, 0, 0, 0.4);
+    }
+
+    #canvas-container {
+      position: relative;
+      width: 100%;
+      max-width: 440px;
+      aspect-ratio: 1 / 1;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background-color: #0a0c16;
+      border-radius: 8px;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 15px #00f0ff; }
+      50% { box-shadow: 0 0 25px #ff007f; }
+    }
+    .pulse-arcade {
+      animation: pulseGlow 3s infinite ease-in-out;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #121420;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #00f0ff;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between items-center p-2 sm:p-4 crt overflow-x-hidden select-none">
+
+  <header class="w-full max-w-lg flex justify-between items-center p-3 mb-2 arcade-card z-20">
+    <div class="flex items-center space-x-2">
+      <span class="text-3xl">🐍</span>
+      <div>
+        <h1 class="text-lg sm:text-xl font-bold font-arcade tracking-wider text-yellow-400 neon-text-yellow">ULAR WIRA</h1>
+        <p class="text-[11px] text-cyan-400 font-semibold tracking-wide">PENDIDIKAN MORAL KSSR</p>
+      </div>
+    </div>
+    
+    <div class="flex items-center gap-2">
+      <button id="sound-toggle" class="p-2 bg-indigo-900/80 hover:bg-indigo-800 border border-cyan-400 rounded-lg text-cyan-300 transition">
+        <i class="fas fa-volume-up text-lg" id="sound-icon"></i>
+      </button>
+      <button id="pause-btn" class="p-2 bg-indigo-900/80 hover:bg-indigo-800 border border-cyan-400 rounded-lg text-cyan-300 transition hidden">
+        <i class="fas fa-pause text-lg" id="pause-icon"></i>
+      </button>
+    </div>
+  </header>
+
+  <main class="w-full max-w-lg flex flex-col items-center justify-center flex-grow z-20 relative">
+
+    <!-- SCREEN 1: Start Menu -->
+    <div id="start-screen" class="w-full arcade-card p-5 flex flex-col items-center text-center space-y-4 pulse-arcade">
+      <h2 class="text-xl sm:text-2xl font-arcade text-green-400 neon-text-green">WIRA MORAL</h2>
+      
+      <!-- Snake Canvas Preview Box -->
+      <div class="w-full max-w-[240px] aspect-square border-2 border-cyan-400 rounded-lg overflow-hidden bg-slate-950 shadow-inner my-1">
+        <canvas id="preview-canvas" class="w-full h-full block"></canvas>
+      </div>
+
+      <p class="text-xs sm:text-sm text-slate-300 max-w-sm">
+        Makan makanan untuk menjawab soalan <strong class="text-yellow-400">Pendidikan Moral KSSR</strong> dan kumpul skor tertinggi!
+      </p>
+
+      <!-- Player Name Input (Cleaned - No default preset value) -->
+      <div class="w-full max-w-xs space-y-1 text-left">
+        <label for="player-name-input" class="text-xs font-semibold text-cyan-400">NAMA WIRA:</label>
+        <input type="text" id="player-name-input" maxlength="12" placeholder="Masukkan Nama Anda..." value=""
+          class="w-full px-4 py-2 bg-slate-900 border-2 border-cyan-400 rounded-lg text-yellow-300 font-bold focus:outline-none focus:border-pink-500 text-center uppercase tracking-wider text-sm">
+      </div>
+
+      <!-- Control Instructions -->
+      <div class="bg-slate-900/80 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-300 w-full max-w-xs space-y-1">
+        <p class="font-bold text-cyan-400 text-center">🎮 Kawalan:</p>
+        <p>• Papan Kekunci: <span class="text-yellow-300">Anak Panah</span> / <span class="text-yellow-300">WASD</span></p>
+        <p>• Mudah Alih: <span class="text-yellow-300">Butang Skrin</span> / <span class="text-yellow-300">Leret Canvas</span></p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row gap-3 w-full max-w-xs pt-1">
+        <button id="start-game-btn" class="arcade-btn flex-1 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-arcade text-xs sm:text-sm font-bold rounded-xl shadow-lg border-emerald-700">
+          MULA MAIN
+        </button>
+        <button id="view-leaderboard-btn" class="arcade-btn flex-1 py-3 bg-purple-600 hover:bg-purple-500 text-white font-arcade text-xs font-bold rounded-xl shadow-lg border-purple-800">
+          CARTA SKOR
+        </button>
+      </div>
+    </div>
+
+    <!-- SCREEN 2: Game Screen -->
+    <div id="game-screen" class="w-full flex flex-col items-center hidden">
+      <!-- HUD Dashboard -->
+      <div class="w-full bg-slate-900/90 border-2 border-cyan-500/50 rounded-t-xl p-2 sm:p-3 flex justify-between items-center text-xs sm:text-sm font-bold text-slate-200">
+        <div>
+          <span class="text-cyan-400">SKOR:</span> <span id="score-display" class="text-yellow-400 font-arcade">0</span>
+        </div>
+        <div>
+          <span class="text-pink-400">SOALAN BETUL:</span> <span id="moral-stars-display" class="text-pink-300 font-arcade">0</span>
+        </div>
+        <div>
+          <span class="text-red-400">NYAWA:</span> <span id="lives-display" class="text-red-500">❤️❤️❤️</span>
+        </div>
+      </div>
+
+      <!-- Main Game Canvas Container -->
+      <div id="canvas-container" class="border-2 border-t-0 border-cyan-400 bg-slate-950 shadow-2xl overflow-hidden rounded-b-xl">
+        <canvas id="game-canvas" class="w-full h-full block"></canvas>
+      </div>
+
+      <!-- Mobile D-Pad Touch Controls -->
+      <div id="touch-controls" class="w-full max-w-xs grid grid-cols-3 gap-2 mt-3">
+        <div></div>
+        <button id="btn-up" class="arcade-btn py-3 bg-indigo-700 active:bg-indigo-500 text-white font-bold text-xl rounded-xl border-indigo-900 shadow-md">▲</button>
+        <div></div>
+        <button id="btn-left" class="arcade-btn py-3 bg-indigo-700 active:bg-indigo-500 text-white font-bold text-xl rounded-xl border-indigo-900 shadow-md">◀</button>
+        <button id="btn-down" class="arcade-btn py-3 bg-indigo-700 active:bg-indigo-500 text-white font-bold text-xl rounded-xl border-indigo-900 shadow-md">▼</button>
+        <button id="btn-right" class="arcade-btn py-3 bg-indigo-700 active:bg-indigo-500 text-white font-bold text-xl rounded-xl border-indigo-900 shadow-md">▶</button>
+      </div>
+    </div>
+
+    <!-- MODAL 1: KSSR Moral Question Popup -->
+    <div id="question-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+      <div class="arcade-card w-full max-w-md p-5 flex flex-col space-y-4 shadow-2xl">
+        <div class="flex justify-between items-center border-b border-cyan-500/40 pb-2">
+          <span class="text-xs font-arcade text-yellow-400 flex items-center gap-1">
+            <i class="fas fa-graduation-cap"></i> SOALAN MORAL KSSR
+          </span>
+          <span id="question-nilai-badge" class="px-2 py-0.5 bg-pink-600/80 text-white text-[11px] font-bold rounded-full">
+            Nilai Murni
+          </span>
+        </div>
+
+        <p id="question-text" class="text-sm sm:text-base font-semibold text-white leading-relaxed pt-1">
+          Soalan...
+        </p>
+
+        <!-- Question Options -->
+        <div id="options-container" class="flex flex-col space-y-2 pt-1">
+          <!-- Dynamically populated buttons -->
+        </div>
+
+        <!-- Feedback Result Message -->
+        <div id="feedback-container" class="hidden p-3 rounded-xl text-center font-bold text-sm space-y-1">
+          <div id="feedback-title" class="text-sm font-arcade"></div>
+          <div id="feedback-explanation" class="text-xs font-normal text-slate-200"></div>
+          <button id="continue-btn" class="mt-2 w-full py-2.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-lg text-xs font-arcade">
+            TERUSKAN PERMAINAN ▶
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 2: Game Over Screen -->
+    <div id="gameover-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+      <div class="arcade-card w-full max-w-md p-6 flex flex-col items-center text-center space-y-4 border-red-500">
+        <h2 class="text-xl sm:text-2xl font-arcade text-red-500 neon-text-pink">TAMAT PERMAINAN</h2>
+        <p class="text-xs text-slate-300">Syabas atas usaha anda menjadi Wira Moral!</p>
+
+        <div class="w-full bg-slate-900/90 border border-slate-700 rounded-xl p-4 space-y-2 text-left text-xs sm:text-sm">
+          <div class="flex justify-between">
+            <span class="text-slate-400">Pemain:</span>
+            <span id="go-player-name" class="font-bold text-cyan-400">Pemain</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Jumlah Skor:</span>
+            <span id="go-final-score" class="font-bold font-arcade text-yellow-400">0</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Soalan Moral Dijawab Betul:</span>
+            <span id="go-questions-count" class="font-bold text-green-400">0</span>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 w-full pt-2">
+          <button id="restart-game-btn" class="arcade-btn flex-1 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-arcade text-xs font-bold rounded-xl border-emerald-700">
+            MAIN LAGI
+          </button>
+          <button id="go-leaderboard-btn" class="arcade-btn flex-1 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-arcade text-xs font-bold rounded-xl border-cyan-800">
+            CARTA SKOR
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 3: Leaderboard Modal -->
+    <div id="leaderboard-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+      <div class="arcade-card w-full max-w-md p-5 flex flex-col space-y-4 max-h-[85vh]">
+        <div class="flex justify-between items-center border-b border-cyan-500/40 pb-2">
+          <h3 class="text-base font-arcade text-yellow-400 neon-text-yellow flex items-center gap-2">
+            🏆 CARTA SKOR WIRA
+          </h3>
+          <button id="close-leaderboard-btn" class="text-slate-400 hover:text-white text-lg font-bold px-2">✕</button>
+        </div>
+
+        <div class="overflow-y-auto flex-1 space-y-2 pr-1" id="leaderboard-list">
+          <!-- Populated by JavaScript -->
+        </div>
+
+        <button id="clear-leaderboard-btn" class="text-xs text-red-400 hover:text-red-300 underline self-center pt-1">
+          Padam Rekod Skor
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="w-full max-w-lg text-center text-xs text-slate-400 my-2 z-20">
+    <p>© 2026 Ular Wira Moral | Direka khas oleh <strong class="text-yellow-400">Cikgu Zulaikha</strong>. Hak Cipta Terpelihara.</p>
+    <p class="text-[10px] text-slate-500 mt-0.5">Kurikulum Standard Sekolah Rendah (KSSR) Pendidikan Moral</p>
+  </footer>
+
+  <script>
+    /* ========================================================================
+     * 1. 8-BIT RETRO AUDIO ENGINE (WEB AUDIO API)
+     * ======================================================================== */
+    class RetroAudioEngine {
+      constructor() {
+        this.ctx = null;
+        this.muted = false;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioCtx();
+        }
+      }
+
+      playTone(freq, duration, type = 'square', startGain = 0.15, endGain = 0.01) {
+        if (this.muted) return;
+        this.init();
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+
+          gain.gain.setValueAtTime(startGain, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(endGain, this.ctx.currentTime + duration);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) {
+          console.warn("Audio error:", e);
+        }
+      }
+
+      playEat() {
+        this.playTone(520, 0.08, 'square', 0.12);
+        setTimeout(() => this.playTone(780, 0.1, 'square', 0.12), 60);
+      }
+
+      playTurn() {
+        this.playTone(300, 0.03, 'triangle', 0.05);
+      }
+
+      playCorrect() {
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+          setTimeout(() => this.playTone(freq, 0.12, 'sine', 0.2), idx * 70);
+        });
+      }
+
+      playWrong() {
+        this.playTone(180, 0.18, 'sawtooth', 0.2);
+        setTimeout(() => this.playTone(130, 0.25, 'sawtooth', 0.2), 140);
+      }
+
+      playGameOver() {
+        const notes = [380, 320, 260, 200, 140];
+        notes.forEach((freq, idx) => {
+          setTimeout(() => this.playTone(freq, 0.15, 'sawtooth', 0.2), idx * 100);
+        });
+      }
+    }
+
+    const synth = new RetroAudioEngine();
+
+    /* ========================================================================
+     * 2. KSSR MORAL QUESTION BANK (30 COMPLETE QUESTIONS)
+     * ======================================================================== */
+    const MORAL_QUESTIONS = [
+      {
+        nilai: "Baik Hati",
+        question: "Apakah tindakan yang wajar apabila melihat rakan anda jatuh dari basikal?",
+        options: ["Mentertawakan rakan", "Membantu rakan bangun dan merawat lukanya", "Membiarkan rakan bersendirian", "Mengambil basikal rakan"],
+        answer: 1,
+        explanation: "Nilai Baik Hati mendorong kita menolong orang lain yang berada dalam kesusahan."
+      },
+      {
+        nilai: "Bertanggungjawab",
+        question: "Anda ditugaskan menyapu kelas pada hari Selasa. Apakah tindakan anda?",
+        options: ["Pura-pura sakit dan pulang awal", "Melaksanakan tugas menyapu kelas dengan tekun", "Menyuruh rakan lain menggantikan tempat anda", "Bermain di luar kelas"],
+        answer: 1,
+        explanation: "Nilai Bertanggungjawab meminta kita melaksanakan kewajipan yang diberi."
+      },
+      {
+        nilai: "Berterima Kasih",
+        question: "Ibu telah menyediakan hidangan makanan kegemaran anda. Apakah ucapan anda?",
+        options: ["Minta makanan lain", "Makan tanpa berkata apa-apa", "Mengucapkan terima kasih kepada ibu", "Meninggalkan meja makan"],
+        answer: 2,
+        explanation: "Melahirkan rasa syukur dan berterima kasih memupuk kasih sayang keluarga."
+      },
+      {
+        nilai: "Hemah Tinggi",
+        question: "Bagaimanakah cara bercakap dengan jiran yang lebih tua daripada anda?",
+        options: ["Menggunakan bahasa yang sopan dan lemah lembut", "Tengking jika tidak bersetuju", "Mengabaikan mereka apabila disapa", "Menggunakan kata-kata kasar"],
+        answer: 0,
+        explanation: "Beradab sopan dan berbudi pekerti mulia adalah teras nilai Hemah Tinggi."
+      },
+      {
+        nilai: "Hormat",
+        question: "Semasa lagu Negaraku dimainkan, apakah perkara yang patut anda lakukan?",
+        options: ["Bercakap dengan rakan", "Berdiri tegak dan menyanyi dengan penuh rasa hormat", "Berjalan ke kantin", "Duduk santai"],
+        answer: 1,
+        explanation: "Berdiri tegak semasa lagu kebangsaan dimainkan mempamerkan rasa hormat kepada negara."
+      },
+      {
+        nilai: "Kasih Sayang",
+        question: "Apakah amalan terbaik untuk menunjukkan kasih sayang kepada ahli keluarga?",
+        options: ["Meminta wang setiap hari", "Membantu kerja rumah dan mengambil berat", "Bermain telefon bimbit sepanjang hari", "Menjerit apabila marah"],
+        answer: 1,
+        explanation: "Saling membantu dan mengambil berat merapatkan hubungan kekeluargaan."
+      },
+      {
+        nilai: "Keadilan",
+        question: "Ibu memotong sebiji kek untuk 2 orang anak. Bagaimanakah pembahagian yang adil?",
+        options: ["Memotong kek secara saksama untuk kedua-dua anak", "MEMBERIKAN semua kek kepada anak bongsu", "Mengambil kek itu untuk diri sendiri", "Membuang separuh daripadanya"],
+        answer: 0,
+        explanation: "Keadilan bermaksud membuat pertimbangan dan keputusan yang saksama."
+      },
+      {
+        nilai: "Keberanian",
+        question: "Anda ternampak seorang rakan dibuli di kawasan sekolah. Apakah tindakan betul?",
+        options: ["Menyertai pembuli tersebut", "Melaporkan kejadian dengan berani kepada guru", "Melarikan diri dan mendiamkan diri", "Mentertawakan mangsa"],
+        answer: 1,
+        explanation: "Berani melaporkan salah laku kepada pihak berkuasa/guru adalah tindakan wira moral."
+      },
+      {
+        nilai: "Kejujuran",
+        question: "Anda menjumpai dompet berisi wang di padang sekolah. Apakah tindakan anda?",
+        options: ["Mengambil wang dan membuang dompet", "Menyerahkan dompet tersebut kepada guru atau pejabat", "Membeli gula-gula untuk rakan", "Menyimpan dompet di dalam beg"],
+        answer: 1,
+        explanation: "Kejujuran bermaksud bercakap benar, amanah dan tidak mengambil hak orang lain."
+      },
+      {
+        nilai: "Kerajinan",
+        question: "Ulang kaji pelajaran perlu dilakukan secara...",
+        options: ["Hanya apabila peperiksaan hampir tiba", "Berterusan dan bersungguh-sungguh", "Apabila dipaksa oleh ibu bapa sahaja", "Sambil menonton televisyen"],
+        answer: 1,
+        explanation: "Kerajinan ialah usaha yang berterusan dengan penuh semangat dan tekun."
+      },
+      {
+        nilai: "Kerjasama",
+        question: "Satu tugasan kumpulan telah diberikan oleh guru. Bagaimanakah anda bertindak?",
+        options: ["Menyiapkan tugasan bersama-sama ahli kumpulan", "Menyerahkan semua kerja kepada ketua kumpulan", "Bermain-main semasa sesi perbincangan", "Enggan bertukar idea"],
+        answer: 0,
+        explanation: "Bekerjasama membolehkan sebarang tugasan berat menjadi lebih mudah dan cepat siap."
+      },
+      {
+        nilai: "Kesederhanaan",
+        question: "Semasa mengambil makanan di majlis kenduri, kita hendaklah...",
+        options: ["Mengambil makanan secara berlebihan hingga membazir", "Mengambil makanan mengikut kadar keperluan sahaja", "Mengambil semua jenis pencuci mulut sahaja", "Membuang makanan yang tidak disukai"],
+        answer: 1,
+        explanation: "Kesederhanaan membolehkan kita tidak melampaui batas dan mengelakkan pembaziran."
+      },
+      {
+        nilai: "Toleransi",
+        question: "Rakan anda berlainan agama sedang berpuasa. Apakah sikap toleransi anda?",
+        options: ["Makan dan minum secara terbuka di hadapannya", "Hormati mereka dan tidak makan secara terang-terangan di hadapannya", "Ejek amalan ibadah mereka", "Memaksa mereka makan"],
+        answer: 1,
+        explanation: "Toleransi membentuk sikap bertolak ansur dan menghormati kepelbagaian kaum/agama."
+      },
+      {
+        nilai: "Rasional",
+        question: "Sebelum membuat keputusan yang penting, kita hendaklah...",
+        options: ["Mengikut emosi dan perasaan marah", "Berfikir tentang kesan baik dan buruknya terlebih dahulu", "Mengikut cakap rakan tanpa berfikir", "Melakukan tanpa perancangan"],
+        answer: 1,
+        explanation: "Nilai Rasional membantu kita berfikir berdasarkan alasan dan bukti yang munasabah."
+      },
+      {
+        nilai: "Semangat Bermasyarakat",
+        question: "Penduduk taman perumahan mengadakan aktiviti gotong-royong. Anda patut...",
+        options: ["Duduk di dalam rumah sahaja", "Melibatkan diri membantu membersihkan kawasan persekitaran", "Mengotor kawasan sekitar", "Mengkritik jiran-jiran"],
+        answer: 1,
+        explanation: "Melibatkan diri dalam aktiviti kemasyarakatan mengukuhkan tali silaturahim."
+      },
+      {
+        nilai: "Baik Hati",
+        question: "Seseorang warga tua sukar melintas jalan raya yang sibuk. Tindakan anda ialah...",
+        options: ["Membiarkan orang tua tersebut melintas sendiri", "Memimpin dan membimbing orang tua itu melintas jalan", "Pura-pura tidak nampak", "Menyuruhnya patah balik"],
+        answer: 1,
+        explanation: "Prihatin dan bersedia membantu golongan memerlukan ialah tanda baik hati."
+      },
+      {
+        nilai: "Hormat",
+        question: "Bagaimanakah sikap anda apabila menghadiri rumah terbuka jiran berbilang kaum?",
+        options: ["Menghormati adat dan budaya jiran tersebut", "Menghina makanan tradisional mereka", "Membuat bising di dalam rumah", "Enggan bersalaman atau menyapa"],
+        answer: 0,
+        explanation: "Menghormati budaya kaum lain menguatkan perpaduan rakyat Malaysia."
+      },
+      {
+        nilai: "Bertanggungjawab",
+        question: "Selepas selesai menggunakan alatan di makmal sains sekolah, anda perlu...",
+        options: ["Meninggalkan alatan di atas meja", "Membersihkan dan menyimpan alatan di tempat asal", "Membawa balik alatan ke rumah", "Membuang alatan ke dalam tong sampah"],
+        answer: 1,
+        explanation: "Memelihara kebersihan dan keselamatan alatan sekolah ialah tanggungjawab murid."
+      },
+      {
+        nilai: "Kejujuran",
+        question: "Anda secara tidak sengaja memecahkan pasu bunga kesayangan ibu. Tindakan anda ialah...",
+        options: ["Menuduh kucing memecahkannya", "Mengaku kesilapan diri dan meminta maaf kepada ibu", "Sembunyikan serpihan pasu", "Melarikan diri keluar rumah"],
+        answer: 1,
+        explanation: "Mengaku kesalahan secara jujur menunjukkan keperibadian wira moral yang mulia."
+      },
+      {
+        nilai: "Hemah Tinggi",
+        question: "Apabila menerima bantuan atau hadiah daripada seseorang, ucapan yang wajar ialah...",
+        options: ["'Sama-sama'", "'Terima kasih'", "'Sikitnya hadiah ini'", "Tidak berkata apa-apa"],
+        answer: 1,
+        explanation: "Sopan santun dan santun bahasa dicerminkan melalui ucapan terima kasih."
+      },
+      {
+        nilai: "Kasih Sayang",
+        question: "Bagaimanakah cara menjaga alam sekitar sebagai bukti kasih sayang kepada bumi?",
+        options: ["Membuang sampah ke dalam sungai", "Menanam pokok dan memelihara kebersihan persekitaran", "Membakar sampah secara terbuka", "Menebang pokok sesuka hati"],
+        answer: 1,
+        explanation: "Menyayangi alam sekitar memastikan persekitaran sentiasa bersih dan segar."
+      },
+      {
+        nilai: "Kerajinan",
+        question: "Apabila menemui jalan buntu dalam menyelesaikan tugasan Matematik, anda...",
+        options: ["Berputus asa dan menangis", "Berusaha bertanya kepada guru atau rakan sehingga faham", "Tidur di dalam kelas", "Meniru jawapan rakan"],
+        answer: 1,
+        explanation: "Gigih berusaha tanpa mudah mengaku kalah adalah asas kejayaan."
+      },
+      {
+        nilai: "Toleransi",
+        question: "Jika berlaku perselisihan faham kecil antara rakan sekelas, perkara terbaik ialah...",
+        options: ["Bergaduh dan memukul rakan", "Berbincang secara aman dan bertolak ansur", "Mengajak rakan lain membenci mereka", "Memutuskan tali persahabatan"],
+        answer: 1,
+        explanation: "Bertolak ansur dan bermaaf-maafan menyelesaikan pergolakan dengan damai."
+      },
+      {
+        nilai: "Keberanian",
+        question: "Mempertahankan kebenaran walaupun menghadapi cabaran adalah ciri nilai...",
+        options: ["Keberanian", "Penakut", "Kemalasan", "Mementingkan diri"],
+        answer: 0,
+        explanation: "Keberanian berlandaskan kebenaran membina jati diri wira."
+      },
+      {
+        nilai: "Kesederhanaan",
+        question: "Bagaimanakah amalan berbelanja yang berhemat di kantin sekolah?",
+        options: ["Membeli semua jenis makanan dan minuman", "Membeli mengikut kadar keperluan dan menyimpan baki wang", "Meminjam wang rakan untuk membeli mainan", "Menghabiskan semua wang saku"],
+        answer: 1,
+        explanation: "Berbelanja mengikut keperluan mengelakkan pembaziran dan memupuk amalan menabung."
+      },
+      {
+        nilai: "Keadilan",
+        question: "Seorang pengadil perlawanan bola sepak mestilah bersikap...",
+        options: ["Sebelah pihak kepada pasukan kawannya", "Adil, saksama dan mengikut peraturan permainan", "Menerima rasuah", "Tidak peduli dengan peraturan"],
+        answer: 1,
+        explanation: "Keadilan menjamin keharmonian dan hak setiap individu dihormati."
+      },
+      {
+        nilai: "Semangat Bermasyarakat",
+        question: "Bagaimanakah tindakan anda apabila jiran sebelah rumah ditimpa kesusahan?",
+        options: ["Pura-pura tidak tahu", "Meringankan beban dengan ziarah dan memberi bantuan", "Mengadakan parti bising", "Ketawakan mereka"],
+        answer: 1,
+        explanation: "Bantu-membantu sesama jiran mewujudkan masyarakat yang sejahtera."
+      },
+      {
+        nilai: "Berterima Kasih",
+        question: "Pemandu bas sekolah menghantar anda ke sekolah dengan selamat. Anda sepatutnya...",
+        options: ["Mengucapkan terima kasih sebelum turun dari bas", "Melompat keluar dari bas", "Meninggalkan sampah di tempat duduk", "Menjerit di dalam bas"],
+        answer: 0,
+        explanation: "Menghargai perkhidmatan dan jasa orang lain adalah amalan terpuji."
+      },
+      {
+        nilai: "Rasional",
+        question: "Menerima teguran guru dengan hati terbuka dan berusaha memperbaiki diri adalah contoh sikap...",
+        options: ["Rasional", "Egois", "Degil", "Pemalas"],
+        answer: 0,
+        explanation: "Sikap rasional membolehkan kita menerima kenyataan dan memperbaiki kelemahan."
+      },
+      {
+        nilai: "Hormat",
+        question: "Sebelum memasuki bilik guru atau rumah orang lain, kita hendaklah...",
+        options: ["Menerjah masuk tanpa kebenaran", "Ketuk pintu dan meminta izin terlebih dahulu", "Menjerit nama penghuni", "Membuka pintu dengan kuat"],
+        answer: 1,
+        explanation: "Meminta izin menunjukkan penghormatan tinggi terhadap ruang orang lain."
+      }
+    ];
+
+    /* ==========================================================================
+     * 3. GAME STATE & CANVAS SETUP
+     * ========================================================================== */
+    const GRID_SIZE = 20; // 20x20 Grid
+    let gameCanvas, gameCtx;
+    let previewCanvas, previewCtx;
+    let tileSize = 20;
+
+    let gameLoopTimer = null;
+    let speed = 125;
+    let isPaused = false;
+    let isGameOver = false;
+
+    // Player Stats
+    let playerName = "Pemain";
+    let score = 0;
+    let moralCorrectAnswersCount = 0;
+    let lives = 3;
+
+    // Snake State
+    let snake = [];
+    let dir = { x: 1, y: 0 };
+    let nextDir = { x: 1, y: 0 };
+
+    // Food State
+    let food = { x: 12, y: 10 };
+
+    // Modal state
+    let currentQuestion = null;
+    let questionActive = false;
+
+    /* ==========================================================================
+     * 4. EVENT LISTENERS & RESIZE MANAGEMENT
+     * ========================================================================== */
+    window.addEventListener('DOMContentLoaded', () => {
+      gameCanvas = document.getElementById('game-canvas');
+      gameCtx = gameCanvas.getContext('2d');
+
+      previewCanvas = document.getElementById('preview-canvas');
+      previewCtx = previewCanvas.getContext('2d');
+
+      // Resize and draw initial preview
+      initCanvases();
+      window.addEventListener('resize', initCanvases);
+
+      // Buttons
+      document.getElementById('start-game-btn').addEventListener('click', startGame);
+      document.getElementById('restart-game-btn').addEventListener('click', startGame);
+      document.getElementById('view-leaderboard-btn').addEventListener('click', showLeaderboard);
+      document.getElementById('go-leaderboard-btn').addEventListener('click', () => {
+        hideModal('gameover-modal');
+        showLeaderboard();
+      });
+      document.getElementById('close-leaderboard-btn').addEventListener('click', () => hideModal('leaderboard-modal'));
+      document.getElementById('clear-leaderboard-btn').addEventListener('click', clearLeaderboard);
+
+      document.getElementById('sound-toggle').addEventListener('click', toggleSound);
+      document.getElementById('pause-btn').addEventListener('click', togglePause);
+      document.getElementById('continue-btn').addEventListener('click', resumeFromQuestion);
+
+      // Controls
+      window.addEventListener('keydown', handleKeyPress);
+
+      document.getElementById('btn-up').addEventListener('click', () => setDirection(0, -1));
+      document.getElementById('btn-down').addEventListener('click', () => setDirection(0, 1));
+      document.getElementById('btn-left').addEventListener('click', () => setDirection(-1, 0));
+      document.getElementById('btn-right').addEventListener('click', () => setDirection(1, 0));
+
+      setupTouchSwipes();
+    });
+
+    function initCanvases() {
+      // Main Game Canvas sizing
+      const container = document.getElementById('canvas-container');
+      if (container) {
+        const size = Math.floor(container.clientWidth);
+        gameCanvas.width = size;
+        gameCanvas.height = size;
+        tileSize = size / GRID_SIZE;
+      }
+
+      // Start Menu Preview Canvas sizing
+      if (previewCanvas) {
+        const pSize = Math.floor(previewCanvas.parentElement.clientWidth || 200);
+        previewCanvas.width = pSize;
+        previewCanvas.height = pSize;
+        drawStartMenuPreview();
+      }
+
+      if (!document.getElementById('game-screen').classList.contains('hidden')) {
+        renderGame();
+      }
+    }
+
+    /* ==========================================================================
+     * 5. PREVIEW SNAKE DRAWING ON START SCREEN
+     * ========================================================================== */
+    function drawStartMenuPreview() {
+      if (!previewCtx) return;
+      const w = previewCanvas.width;
+      const h = previewCanvas.height;
+      const pTile = w / 10;
+
+      // Background
+      previewCtx.fillStyle = '#080a12';
+      previewCtx.fillRect(0, 0, w, h);
+
+      // Grid
+      previewCtx.strokeStyle = '#151b33';
+      previewCtx.lineWidth = 1;
+      for (let i = 0; i <= 10; i++) {
+        previewCtx.beginPath();
+        previewCtx.moveTo(i * pTile, 0);
+        previewCtx.lineTo(i * pTile, h);
+        previewCtx.stroke();
+        previewCtx.beginPath();
+        previewCtx.moveTo(0, i * pTile);
+        previewCtx.lineTo(w, i * pTile);
+        previewCtx.stroke();
+      }
+
+      // Sample Snake Coordinates
+      const sampleSnake = [
+        { x: 6, y: 4 },
+        { x: 5, y: 4 },
+        { x: 4, y: 4 },
+        { x: 3, y: 4 },
+        { x: 3, y: 5 },
+        { x: 3, y: 6 }
+      ];
+
+      // Draw Snake Body
+      sampleSnake.forEach((seg, idx) => {
+        if (idx === 0) {
+          // Head
+          previewCtx.fillStyle = '#ccff00'; // Bright Yellow/Lime
+          previewCtx.fillRect(seg.x * pTile + 1, seg.y * pTile + 1, pTile - 2, pTile - 2);
+
+          // Eyes
+          previewCtx.fillStyle = '#ffffff';
+          previewCtx.fillRect(seg.x * pTile + pTile * 0.6, seg.y * pTile + pTile * 0.2, pTile * 0.3, pTile * 0.3);
+          previewCtx.fillRect(seg.x * pTile + pTile * 0.6, seg.y * pTile + pTile * 0.5, pTile * 0.3, pTile * 0.3);
+
+          previewCtx.fillStyle = '#000000';
+          previewCtx.fillRect(seg.x * pTile + pTile * 0.75, seg.y * pTile + pTile * 0.3, pTile * 0.15, pTile * 0.15);
+          previewCtx.fillRect(seg.x * pTile + pTile * 0.75, seg.y * pTile + pTile * 0.6, pTile * 0.15, pTile * 0.15);
+        } else {
+          // Body
+          previewCtx.fillStyle = '#00ff66'; // Bright Neon Green
+          previewCtx.fillRect(seg.x * pTile + 1, seg.y * pTile + 1, pTile - 2, pTile - 2);
+        }
+      });
+
+      // Sample Food (Apple)
+      const fx = 8, fy = 4;
+      previewCtx.fillStyle = '#ff0055';
+      previewCtx.beginPath();
+      previewCtx.arc(fx * pTile + pTile / 2, fy * pTile + pTile / 2, pTile / 2.6, 0, Math.PI * 2);
+      previewCtx.fill();
+
+      // Leaf
+      previewCtx.fillStyle = '#00ff66';
+      previewCtx.fillRect(fx * pTile + pTile * 0.5, fy * pTile + pTile * 0.1, pTile * 0.2, pTile * 0.2);
+    }
+
+    /* ==========================================================================
+     * 6. GAME START & LOOP MECHANICS
+     * ========================================================================== */
+    function startGame() {
+      synth.init();
+
+      // Get Player Name (Fallback: "Pemain")
+      const inputVal = document.getElementById('player-name-input').value.trim();
+      playerName = inputVal ? inputVal.toUpperCase() : "PEMAIN";
+
+      // Reset Stats
+      score = 0;
+      moralCorrectAnswersCount = 0;
+      lives = 3;
+      speed = 125;
+      isGameOver = false;
+      isPaused = false;
+      questionActive = false;
+
+      // Initial Snake Body
+      snake = [
+        { x: 8, y: 10 },
+        { x: 7, y: 10 },
+        { x: 6, y: 10 }
+      ];
+      dir = { x: 1, y: 0 };
+      nextDir = { x: 1, y: 0 };
+
+      // Spawn First Food
+      spawnFood();
+
+      // Update UI
+      updateHUD();
+
+      // Screen Transitions
+      document.getElementById('start-screen').classList.add('hidden');
+      document.getElementById('gameover-modal').classList.add('hidden');
+      document.getElementById('leaderboard-modal').classList.add('hidden');
+      document.getElementById('question-modal').classList.add('hidden');
+      document.getElementById('game-screen').classList.remove('hidden');
+      document.getElementById('pause-btn').classList.remove('hidden');
+
+      // Ensure explicit sizing before starting loop
+      initCanvases();
+
+      if (gameLoopTimer) clearInterval(gameLoopTimer);
+      gameLoopTimer = setInterval(gameLoop, speed);
+    }
+
+    function gameLoop() {
+      if (isPaused || questionActive || isGameOver) return;
+
+      dir = { ...nextDir };
+      const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+
+      // Check Wall Collisions
+      if (head.x < 0 || head.x >= GRID_SIZE || head.y < 0 || head.y >= GRID_SIZE) {
+        handleCollision();
+        return;
+      }
+
+      // Check Self Collision
+      for (let i = 0; i < snake.length; i++) {
+        if (snake[i].x === head.x && snake[i].y === head.y) {
+          handleCollision();
+          return;
+        }
+      }
+
+      // Move Snake Head
+      snake.unshift(head);
+
+      // Check Eating Food
+      if (head.x === food.x && head.y === food.y) {
+        synth.playEat();
+        
+        // PAUSE IMMEDIATELY & POPUP MORAL QUESTION ON EVERY BITE
+        questionActive = true;
+        spawnFood(); // Prepare next food location
+        triggerMoralQuestion();
+      } else {
+        // Normal Move (Remove tail segment)
+        snake.pop();
+      }
+
+      renderGame();
+    }
+
+    function handleCollision() {
+      lives--;
+      synth.playWrong();
+      updateHUD();
+
+      if (lives <= 0) {
+        gameOver();
+      } else {
+        // Reset position on hit
+        snake = [
+          { x: 8, y: 10 },
+          { x: 7, y: 10 },
+          { x: 6, y: 10 }
+        ];
+        dir = { x: 1, y: 0 };
+        nextDir = { x: 1, y: 0 };
+      }
+    }
+
+    function spawnFood() {
+      let valid = false;
+      while (!valid) {
+        food = {
+          x: Math.floor(Math.random() * GRID_SIZE),
+          y: Math.floor(Math.random() * GRID_SIZE)
+        };
+        valid = !snake.some(seg => seg.x === food.x && seg.y === food.y);
+      }
+    }
+
+    /* ==========================================================================
+     * 7. CANVAS RENDERING ENGINE
+     * ========================================================================== */
+    function renderGame() {
+      if (!gameCtx) return;
+
+      // Clear Canvas Background
+      gameCtx.fillStyle = '#080a12';
+      gameCtx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
+
+      // Grid Lines
+      gameCtx.strokeStyle = '#151b33';
+      gameCtx.lineWidth = 1;
+      for (let i = 0; i <= GRID_SIZE; i++) {
+        gameCtx.beginPath();
+        gameCtx.moveTo(i * tileSize, 0);
+        gameCtx.lineTo(i * tileSize, gameCanvas.height);
+        gameCtx.stroke();
+
+        gameCtx.beginPath();
+        gameCtx.moveTo(0, i * tileSize);
+        gameCtx.lineTo(gameCanvas.width, i * tileSize);
+        gameCtx.stroke();
+      }
+
+      // Draw Food (Apple)
+      const fx = food.x * tileSize + tileSize / 2;
+      const fy = food.y * tileSize + tileSize / 2;
+      const r = tileSize / 2.3;
+
+      gameCtx.shadowColor = '#ff0055';
+      gameCtx.shadowBlur = 10;
+      gameCtx.fillStyle = '#ff0055';
+      gameCtx.beginPath();
+      gameCtx.arc(fx, fy, r, 0, Math.PI * 2);
+      gameCtx.fill();
+
+      // Apple Leaf
+      gameCtx.fillStyle = '#00ff66';
+      gameCtx.shadowBlur = 0;
+      gameCtx.fillRect(fx, fy - r - 2, 4, 4);
+
+      // Draw Snake Body
+      snake.forEach((seg, idx) => {
+        const x = seg.x * tileSize;
+        const y = seg.y * tileSize;
+
+        if (idx === 0) {
+          // SNAKE HEAD: Bright Yellow/Lime (#ccff00)
+          gameCtx.fillStyle = '#ccff00';
+          gameCtx.shadowColor = '#ccff00';
+          gameCtx.shadowBlur = 12;
+          gameCtx.fillRect(x + 1, y + 1, tileSize - 2, tileSize - 2);
+
+          // EYES with Direction Orientation
+          gameCtx.shadowBlur = 0;
+          gameCtx.fillStyle = '#ffffff'; // White eye base
+
+          let eye1 = { x: x + 4, y: y + 4 };
+          let eye2 = { x: x + tileSize - 8, y: y + 4 };
+
+          if (dir.x === 1) { // Right
+            eye1 = { x: x + tileSize - 8, y: y + 3 };
+            eye2 = { x: x + tileSize - 8, y: y + tileSize - 7 };
+          } else if (dir.x === -1) { // Left
+            eye1 = { x: x + 3, y: y + 3 };
+            eye2 = { x: x + 3, y: y + tileSize - 7 };
+          } else if (dir.y === 1) { // Down
+            eye1 = { x: x + 3, y: y + tileSize - 8 };
+            eye2 = { x: x + tileSize - 7, y: y + tileSize - 8 };
+          } else if (dir.y === -1) { // Up
+            eye1 = { x: x + 3, y: y + 3 };
+            eye2 = { x: x + tileSize - 7, y: y + 3 };
+          }
+
+          // Draw White Sclera
+          gameCtx.fillRect(eye1.x, eye1.y, 5, 5);
+          gameCtx.fillRect(eye2.x, eye2.y, 5, 5);
+
+          // Black Pupils
+          gameCtx.fillStyle = '#000000';
+          gameCtx.fillRect(eye1.x + 1, eye1.y + 1, 3, 3);
+          gameCtx.fillRect(eye2.x + 1, eye2.y + 1, 3, 3);
+
+        } else {
+          // SNAKE BODY: Bright Neon Green (#00ff66)
+          gameCtx.fillStyle = idx % 2 === 0 ? '#00ff66' : '#00e65c';
+          gameCtx.shadowBlur = 0;
+          gameCtx.fillRect(x + 1, y + 1, tileSize - 2, tileSize - 2);
+        }
+      });
+
+      gameCtx.shadowBlur = 0;
+    }
+
+    /* ==========================================================================
+     * 8. KSSR QUESTION MECHANICS
+     * ========================================================================== */
+    function triggerMoralQuestion() {
+      // Pick random question
+      const randIdx = Math.floor(Math.random() * MORAL_QUESTIONS.length);
+      currentQuestion = MORAL_QUESTIONS[randIdx];
+
+      document.getElementById('question-nilai-badge').innerText = `Nilai: ${currentQuestion.nilai}`;
+      document.getElementById('question-text').innerText = currentQuestion.question;
+
+      const optionsContainer = document.getElementById('options-container');
+      optionsContainer.innerHTML = '';
+      document.getElementById('feedback-container').classList.add('hidden');
+
+      currentQuestion.options.forEach((optText, idx) => {
+        const btn = document.createElement('button');
+        btn.className = "w-full text-left p-3 rounded-xl bg-slate-900 hover:bg-indigo-900 border border-cyan-500/30 text-white font-medium text-xs sm:text-sm transition flex items-center space-x-2";
+        btn.innerHTML = `<span class="w-6 h-6 flex items-center justify-center bg-cyan-900 text-cyan-300 font-bold rounded-full text-xs">${String.fromCharCode(65 + idx)}</span><span>${optText}</span>`;
+        btn.addEventListener('click', () => checkAnswer(idx));
+        optionsContainer.appendChild(btn);
+      });
+
+      document.getElementById('question-modal').classList.remove('hidden');
+    }
+
+    function checkAnswer(selectedIdx) {
+      const isCorrect = selectedIdx === currentQuestion.answer;
+      const feedbackContainer = document.getElementById('feedback-container');
+      const feedbackTitle = document.getElementById('feedback-title');
+      const feedbackExp = document.getElementById('feedback-explanation');
+      const optionsContainer = document.getElementById('options-container');
+
+      Array.from(optionsContainer.children).forEach(btn => btn.disabled = true);
+      feedbackContainer.classList.remove('hidden');
+
+      if (isCorrect) {
+        synth.playCorrect();
+        score += 50; // Correct bonus
+        moralCorrectAnswersCount++;
+        updateHUD();
+
+        feedbackContainer.className = "p-3 rounded-xl text-center font-bold text-sm bg-emerald-950 border-2 border-emerald-500 space-y-1";
+        feedbackTitle.className = "text-sm font-arcade text-emerald-400";
+        feedbackTitle.innerText = "🎉 TEPAT! +50 SKOR MORAL";
+      } else {
+        synth.playWrong();
+        score += 10; // Base score for eating
+        updateHUD();
+
+        feedbackContainer.className = "p-3 rounded-xl text-center font-bold text-sm bg-rose-950 border-2 border-rose-500 space-y-1";
+        feedbackTitle.className = "text-sm font-arcade text-rose-400";
+        feedbackTitle.innerText = "❌ KURANG TEPAT (+10 SKOR MAKAN)";
+      }
+
+      feedbackExp.innerText = currentQuestion.explanation;
+    }
+
+    function resumeFromQuestion() {
+      document.getElementById('question-modal').classList.add('hidden');
+      questionActive = false;
+    }
+
+    /* ==========================================================================
+     * 9. CONTROLS, AUDIO & LEADERBOARD SYSTEM
+     * ========================================================================== */
+    function updateHUD() {
+      document.getElementById('score-display').innerText = score;
+      document.getElementById('moral-stars-display').innerText = moralCorrectAnswersCount;
+      document.getElementById('lives-display').innerText = '❤️'.repeat(Math.max(0, lives));
+    }
+
+    function togglePause() {
+      isPaused = !isPaused;
+      const icon = document.getElementById('pause-icon');
+      icon.className = isPaused ? 'fas fa-play text-lg' : 'fas fa-pause text-lg';
+    }
+
+    function toggleSound() {
+      synth.muted = !synth.muted;
+      const icon = document.getElementById('sound-icon');
+      icon.className = synth.muted ? 'fas fa-volume-mute text-lg text-red-400' : 'fas fa-volume-up text-lg text-cyan-300';
+    }
+
+    function setDirection(x, y) {
+      if ((x === 1 && dir.x === -1) || (x === -1 && dir.x === 1)) return;
+      if ((y === 1 && dir.y === -1) || (y === -1 && dir.y === 1)) return;
+      nextDir = { x, y };
+      synth.playTurn();
+    }
+
+    function handleKeyPress(e) {
+      switch (e.key) {
+        case 'ArrowUp': case 'w': case 'W': setDirection(0, -1); break;
+        case 'ArrowDown': case 's': case 'S': setDirection(0, 1); break;
+        case 'ArrowLeft': case 'a': case 'A': setDirection(-1, 0); break;
+        case 'ArrowRight': case 'd': case 'D': setDirection(1, 0); break;
+        case ' ': togglePause(); break;
+      }
+    }
+
+    function setupTouchSwipes() {
+      let startX = 0, startY = 0;
+      gameCanvas.addEventListener('touchstart', (e) => {
+        startX = e.changedTouches[0].screenX;
+        startY = e.changedTouches[0].screenY;
+      }, false);
+
+      gameCanvas.addEventListener('touchend', (e) => {
+        const dx = e.changedTouches[0].screenX - startX;
+        const dy = e.changedTouches[0].screenY - startY;
+
+        if (Math.abs(dx) > Math.abs(dy)) {
+          if (dx > 20) setDirection(1, 0);
+          else if (dx < -20) setDirection(-1, 0);
+        } else {
+          if (dy > 20) setDirection(0, 1);
+          else if (dy < -20) setDirection(0, -1);
+        }
+      }, false);
+    }
+
+    function gameOver() {
+      isGameOver = true;
+      if (gameLoopTimer) clearInterval(gameLoopTimer);
+      synth.playGameOver();
+
+      saveLeaderboardEntry({
+        name: playerName,
+        score: score,
+        questions: moralCorrectAnswersCount,
+        date: new Date().toLocaleDateString('ms-MY')
+      });
+
+      document.getElementById('go-player-name').innerText = playerName;
+      document.getElementById('go-final-score').innerText = score;
+      document.getElementById('go-questions-count').innerText = moralCorrectAnswersCount;
+
+      document.getElementById('gameover-modal').classList.remove('hidden');
+    }
+
+    function getLeaderboardData() {
+      try {
+        const data = localStorage.getItem('ular_wira_moral_scores');
+        return data ? JSON.parse(data) : [];
+      } catch (e) { return []; }
+    }
+
+    function saveLeaderboardEntry(entry) {
+      const scores = getLeaderboardData();
+      scores.push(entry);
+      scores.sort((a, b) => b.score - a.score);
+      try {
+        localStorage.setItem('ular_wira_moral_scores', JSON.stringify(scores.slice(0, 10)));
+      } catch (e) { console.warn("Storage error:", e); }
+    }
+
+    function showLeaderboard() {
+      const listContainer = document.getElementById('leaderboard-list');
+      const scores = getLeaderboardData();
+      listContainer.innerHTML = '';
+
+      if (scores.length === 0) {
+        listContainer.innerHTML = `<p class="text-center text-xs text-slate-400 py-6">Tiada rekod skor lagi. Jadilah Wira Moral pertama!</p>`;
+      } else {
+        scores.forEach((item, index) => {
+          const row = document.createElement('div');
+          row.className = "bg-slate-900 border border-slate-700/80 rounded-lg p-2.5 flex justify-between items-center text-xs";
+          let medal = `#${index + 1}`;
+          if (index === 0) medal = "🥇";
+          else if (index === 1) medal = "🥈";
+          else if (index === 2) medal = "🥉";
+
+          row.innerHTML = `
+            <div class="flex items-center space-x-3">
+              <span class="font-bold text-sm w-6 text-center text-yellow-400">${medal}</span>
+              <div>
+                <p class="font-bold text-cyan-300 uppercase">${item.name}</p>
+                <p class="text-[10px] text-slate-400">Soalan Betul: ${item.questions} • ${item.date}</p>
+              </div>
+            </div>
+            <span class="font-arcade text-yellow-400 font-bold text-sm">${item.score}</span>
+          `;
+          listContainer.appendChild(row);
+        });
+      }
+
+      document.getElementById('leaderboard-modal').classList.remove('hidden');
+    }
+
+    function clearLeaderboard() {
+      if (confirm("Adakah anda pasti untuk memadamkan semua rekod skor?")) {
+        localStorage.removeItem('ular_wira_moral_scores');
+        showLeaderboard();
+      }
+    }
+
+    function hideModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+  </script>
+</body>
+</html>

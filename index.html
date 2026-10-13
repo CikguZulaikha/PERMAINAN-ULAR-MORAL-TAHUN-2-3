@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ular Wira Moral - Permainan Retro KSSR</title>
-    <!-- Google Fonts for 8-Bit Retro Aesthetic -->
+    <!-- Google Fonts for Retro Arcade Aesthetic -->
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #090a10;
+            --bg-color: #0b0c10;
             --arcade-green: #39ff14;
             --arcade-yellow: #fffb00;
             --arcade-red: #ff0055;
             --arcade-blue: #00dfff;
             --arcade-purple: #9d00ff;
             --text-gold: #f4c430;
-            --panel-bg: rgba(14, 18, 32, 0.95);
+            --panel-bg: rgba(15, 15, 26, 0.95);
         }
 
         * {
@@ -29,9 +29,9 @@
         body {
             background-color: var(--bg-color);
             background-image: 
-                radial-gradient(circle at 50% 50%, #171b30 0%, #05060a 100%),
-                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+                radial-gradient(circle at 50% 50%, #1a1c2e 0%, #050508 100%),
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
             background-size: 100% 100%, 20px 20px, 20px 20px;
             color: #fff;
             font-family: 'Press Start 2P', cursive;
@@ -44,32 +44,32 @@
             padding: 10px;
         }
 
-        /* Scanline Overlay */
+        /* Retro CRT Scanline Effect */
         body::before {
             content: " ";
             display: block;
             position: fixed;
             top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
             background-size: 100% 4px;
             z-index: 100;
             pointer-events: none;
             opacity: 0.6;
         }
 
-        /* Top Bar */
+        /* Top Header Bar */
         header {
             width: 100%;
             max-width: 480px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 14px;
-            background: rgba(0, 0, 0, 0.8);
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.7);
             border: 2px solid var(--arcade-blue);
             border-radius: 8px;
             margin-bottom: 8px;
-            box-shadow: 0 0 12px rgba(0, 223, 255, 0.3);
+            box-shadow: 0 0 10px rgba(0, 223, 255, 0.3);
         }
 
         .header-title {
@@ -87,14 +87,13 @@
             font-size: 9px;
             cursor: pointer;
             border-radius: 4px;
-            transition: all 0.2s;
         }
 
         .audio-btn:active {
             transform: scale(0.95);
         }
 
-        /* Game Frame */
+        /* Game Main Container */
         #game-container {
             position: relative;
             width: 100%;
@@ -104,43 +103,43 @@
             align-items: center;
         }
 
-        /* HUD Display Bar with Lives */
+        /* HUD Bar (Score & 3 Lives) */
         .hud {
             width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(0,0,0,0.9);
-            border: 3px solid var(--arcade-purple);
+            background: rgba(0,0,0,0.85);
+            border: 2px solid var(--arcade-purple);
             border-bottom: none;
-            padding: 10px 12px;
+            padding: 10px;
             font-size: 10px;
             color: #fff;
             border-radius: 8px 8px 0 0;
         }
 
-        .hud span.val {
+        .hud span {
             color: var(--arcade-green);
         }
 
-        .lives-container {
+        .lives-display {
             color: var(--arcade-red);
-            letter-spacing: 2px;
             font-size: 12px;
+            letter-spacing: 2px;
         }
 
-        /* Canvas Game Screen */
+        /* Canvas Screen */
         canvas {
-            background-color: #040508;
+            background-color: #030407;
             border: 3px solid var(--arcade-purple);
-            box-shadow: 0 0 18px rgba(157, 0, 255, 0.4);
+            box-shadow: 0 0 15px rgba(157, 0, 255, 0.4);
             display: block;
             width: 100%;
             aspect-ratio: 1 / 1;
             image-rendering: pixelated;
         }
 
-        /* Screens & Modals Overlay */
+        /* Overlays & Modals */
         .overlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -154,7 +153,7 @@
             padding: 20px;
             text-align: center;
             z-index: 20;
-            box-shadow: 0 0 25px rgba(0, 223, 255, 0.5);
+            box-shadow: 0 0 20px rgba(0, 223, 255, 0.5);
             max-height: 100%;
             overflow-y: auto;
         }
@@ -166,7 +165,7 @@
         h1.game-title {
             font-size: 18px;
             color: var(--arcade-yellow);
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             text-shadow: 3px 3px var(--arcade-red);
             line-height: 1.4;
         }
@@ -175,11 +174,11 @@
             font-family: 'VT323', monospace;
             font-size: 20px;
             color: var(--arcade-blue);
-            margin-bottom: 18px;
+            margin-bottom: 20px;
         }
 
         .input-group {
-            margin-bottom: 16px;
+            margin-bottom: 20px;
             width: 100%;
             max-width: 280px;
         }
@@ -191,7 +190,7 @@
             color: #fff;
         }
 
-        input[type="text"], input[type="password"] {
+        input[type="text"] {
             width: 100%;
             padding: 10px;
             font-family: 'Press Start 2P', cursive;
@@ -204,12 +203,7 @@
             border-radius: 4px;
         }
 
-        input[type="text"]:focus, input[type="password"]:focus {
-            border-color: var(--arcade-yellow);
-            box-shadow: 0 0 8px var(--arcade-yellow);
-        }
-
-        /* Retro Buttons */
+        /* Retro Arcade Buttons */
         .btn {
             background: var(--arcade-green);
             color: #000;
@@ -249,21 +243,22 @@
             box-shadow: 0 4px #990033;
         }
 
-        /* Quiz Box */
+        /* Quiz Arcade Card */
         .quiz-card {
             background: #000;
             border: 2px solid var(--arcade-yellow);
-            padding: 14px;
+            padding: 15px;
             border-radius: 8px;
             width: 100%;
-            box-shadow: 0 0 12px rgba(255, 251, 0, 0.3);
-            margin-bottom: 12px;
+            box-shadow: 0 0 12px rgba(255, 251, 0, 0.4);
+            margin-bottom: 15px;
         }
 
         .quiz-question {
             font-family: 'VT323', monospace;
             font-size: 22px;
             color: #fff;
+            margin-bottom: 15px;
             line-height: 1.3;
         }
 
@@ -271,8 +266,8 @@
             background: #121524;
             border: 2px solid var(--arcade-blue);
             color: #fff;
-            padding: 10px 12px;
-            margin: 6px 0;
+            padding: 12px;
+            margin: 8px 0;
             width: 100%;
             font-family: 'VT323', monospace;
             font-size: 20px;
@@ -287,12 +282,35 @@
             border-color: #fff;
         }
 
+        /* Feedback Popups for Quiz */
+        .feedback-banner {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 14px;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .feedback-correct {
+            background: rgba(57, 255, 20, 0.2);
+            border: 2px solid var(--arcade-green);
+            color: var(--arcade-green);
+        }
+
+        .feedback-wrong {
+            background: rgba(255, 0, 85, 0.2);
+            border: 2px solid var(--arcade-red);
+            color: var(--arcade-red);
+        }
+
         /* Leaderboard Table */
         .leaderboard-table {
             width: 100%;
-            max-width: 360px;
+            max-width: 340px;
             border-collapse: collapse;
-            margin: 12px 0;
+            margin: 15px 0;
             font-family: 'VT323', monospace;
             font-size: 20px;
         }
@@ -316,20 +334,20 @@
             color: var(--arcade-red);
             font-size: 16px;
             cursor: pointer;
-            padding: 0 4px;
+            padding: 0 5px;
         }
 
-        /* D-Pad Controls */
+        /* Mobile D-Pad Controls */
         #dpad {
             display: grid;
-            grid-template-columns: repeat(3, 52px);
-            grid-template-rows: repeat(3, 52px);
+            grid-template-columns: repeat(3, 50px);
+            grid-template-rows: repeat(3, 50px);
             gap: 5px;
             margin-top: 12px;
         }
 
         .dbtn {
-            background: #181c30;
+            background: #181d30;
             border: 2px solid var(--arcade-blue);
             color: #fff;
             font-size: 18px;
@@ -351,10 +369,11 @@
         #btn-right { grid-column: 3; grid-row: 2; }
         #btn-down { grid-column: 2; grid-row: 3; }
 
+        /* Footer Credits */
         footer {
-            margin-top: 10px;
+            margin-top: 12px;
             font-size: 8px;
-            color: #888;
+            color: #777;
             text-align: center;
             line-height: 1.5;
             padding: 5px;
@@ -364,27 +383,22 @@
             color: var(--text-gold);
         }
 
+        /* Admin Panel */
         .admin-panel {
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(0, 0, 0, 0.9);
             border: 1px dashed var(--arcade-red);
             padding: 10px;
             border-radius: 6px;
             margin-top: 10px;
             width: 100%;
-            max-width: 320px;
+            max-width: 300px;
             font-size: 9px;
-        }
-
-        .admin-panel input {
-            font-size: 8px;
-            padding: 6px;
-            margin: 4px 0;
         }
     </style>
 </head>
 <body>
 
-    <!-- Top Header -->
+    <!-- Header Bar -->
     <header>
         <div class="header-title">🐍 ULAR WIRA MORAL</div>
         <button id="toggle-audio" class="audio-btn">🔊 BGM: ON</button>
@@ -393,14 +407,14 @@
     <!-- Game Container -->
     <div id="game-container">
         
-        <!-- HUD Bar with Lives -->
+        <!-- HUD Bar with 3 Lives -->
         <div class="hud">
-            <div>SKOR: <span id="score-display" class="val">0</span></div>
-            <div>NYAWA: <span id="lives-display" class="lives-container">❤️ ❤️ ❤️</span></div>
-            <div>PEMAIN: <span id="player-display" class="val">-</span></div>
+            <div>SKOR: <span id="score-display">0</span></div>
+            <div>NYAWA: <span id="lives-display" class="lives-display">❤️❤️❤️</span></div>
+            <div>PEMAIN: <span id="player-display">-</span></div>
         </div>
 
-        <!-- Canvas Game Screen -->
+        <!-- Canvas -->
         <canvas id="gameCanvas" width="400" height="400"></canvas>
 
         <!-- START SCREEN OVERLAY -->
@@ -420,9 +434,13 @@
         <!-- QUIZ OVERLAY -->
         <div id="quiz-screen" class="overlay hidden">
             <div class="quiz-card">
-                <p style="font-size: 9px; color: var(--arcade-yellow); margin-bottom: 6px;">SOALAN MORAL (Epal Murni)</p>
-                <div id="quiz-question" class="quiz-question">Soalan dipaparkan di sini...</div>
+                <p style="font-size: 9px; color: var(--arcade-yellow); margin-bottom: 8px;">SOALAN MORAL KSSR</p>
+                <div id="quiz-question" class="quiz-question">Soalan akan dipaparkan di sini...</div>
             </div>
+
+            <!-- Optional Feedback Banner -->
+            <div id="quiz-feedback-banner" class="feedback-banner hidden"></div>
+
             <div id="quiz-options" style="width: 100%; max-width: 320px;"></div>
         </div>
 
@@ -430,7 +448,7 @@
         <div id="gameover-screen" class="overlay hidden">
             <h1 class="game-title" style="color: var(--arcade-red);">TAMAT PERMAINAN!</h1>
             <p class="subtitle" id="final-score-text">Skor Akhir: 0</p>
-            <p id="quiz-feedback" style="font-family: 'VT323'; font-size: 18px; color: var(--arcade-yellow); margin-bottom: 15px;"></p>
+            <p id="gameover-reason" style="font-family: 'VT323'; font-size: 18px; color: var(--arcade-yellow); margin-bottom: 15px;"></p>
             
             <button id="btn-replay" class="btn">MAIN LAGI</button>
             <button id="btn-leaderboard-from-over" class="btn btn-secondary">PAPAN SKOR</button>
@@ -438,7 +456,7 @@
 
         <!-- LEADERBOARD OVERLAY -->
         <div id="leaderboard-screen" class="overlay hidden">
-            <h1 class="game-title" style="font-size: 15px;">🏆 PAPAN SKOR GLOBAL</h1>
+            <h1 class="game-title" style="font-size: 15px;">🏆 PAPAN SKOR TEMPATAN</h1>
             
             <div style="width: 100%; max-height: 180px; overflow-y: auto;">
                 <table class="leaderboard-table">
@@ -447,37 +465,32 @@
                             <th>#</th>
                             <th>NAMA</th>
                             <th>SKOR</th>
-                            <th class="admin-col hidden">PADAM</th>
+                            <th class="admin-col hidden">TINDAKAN</th>
                         </tr>
                     </thead>
                     <tbody id="leaderboard-body">
-                        <!-- Dynamic rows -->
+                        <!-- Score Rows -->
                     </tbody>
                 </table>
             </div>
 
+            <!-- Admin Access -->
             <div id="admin-controls-area">
-                <button id="btn-unlock-admin" style="background: none; border: none; color: #555; font-size: 8px; cursor: pointer; text-decoration: underline; margin-top: 5px;">Akses Cikgu Zulaikha</button>
+                <button id="btn-unlock-admin" style="background: none; border: none; color: #555; font-size: 9px; cursor: pointer; text-decoration: underline; margin-top: 5px;">Akses Cikgu Zulaikha</button>
             </div>
 
+            <!-- Admin Panel -->
             <div id="admin-panel" class="admin-panel hidden">
                 <p style="color: var(--arcade-yellow); font-weight: bold; margin-bottom: 5px;">KAWALAN PENTADBIR CIKGU ZULAIKHA</p>
                 <button id="btn-wipe-scores" class="btn btn-danger" style="font-size: 8px; padding: 6px;">PADAM SEMUA SKOR</button>
-                
-                <div style="margin-top: 8px; border-top: 1px solid #444; padding-top: 5px;">
-                    <p style="color: var(--arcade-blue);">⚙️ TETAPAN JSONBIN CLOUD:</p>
-                    <input type="text" id="cfg-bin-id" placeholder="BIN ID">
-                    <input type="password" id="cfg-api-key" placeholder="MASTER API KEY">
-                    <button id="btn-save-cloud-config" class="btn btn-secondary" style="font-size: 8px; padding: 4px; margin-top: 4px;">SIMPAN KUNCI CLOUD</button>
-                </div>
             </div>
 
-            <button id="btn-back-to-start" class="btn" style="margin-top: 12px;">MAIN LAGI</button>
+            <button id="btn-back-to-start" class="btn" style="margin-top: 15px;">KEMBALI</button>
         </div>
 
     </div>
 
-    <!-- Mobile D-Pad Controls -->
+    <!-- On-Screen D-Pad -->
     <div id="dpad">
         <div class="dbtn" id="btn-up">▲</div>
         <div class="dbtn" id="btn-left">◄</div>
@@ -490,18 +503,10 @@
         © 2026 Ular Wira Moral | Direka khas oleh <span>Cikgu Zulaikha</span>.<br>Hak Cipta Terpelihara.
     </footer>
 
+    <!-- Game Logic & Retro Audio Engine -->
     <script>
         /* ==========================================================================
-           1. JSONBIN CLOUD CONFIGURATION (PERMANENT)
-           ========================================================================== */
-        const DEFAULT_BIN_ID = "6ace5e58ac6210605a2e4877";
-        const DEFAULT_API_KEY = "$2a$10$twPE5s7RVo1aAw2MgVGNvOaptUDouHHY5DoR343PCisu.GlOJoSva";
-
-        let jsonbinBinId = localStorage.getItem("ular_bin_id") || DEFAULT_BIN_ID;
-        let jsonbinApiKey = localStorage.getItem("ular_api_key") || DEFAULT_API_KEY;
-
-        /* ==========================================================================
-           2. KSSR MORAL QUESTION BANK (30 QUESTIONS)
+           1. KSSR MORAL QUESTION BANK (30 QUESTIONS)
            ========================================================================== */
         const moralQuestions = [
             { q: "Apakah tindakan yang betul apabila jumpa duit di bilik darjah?", options: ["A. Simpan sendiri", "B. Serah kepada guru", "C. Beli gula-gula"], answer: 1 },
@@ -537,7 +542,7 @@
         ];
 
         /* ==========================================================================
-           3. WEB AUDIO RETRO SYNTHESIZER
+           2. RETRO AUDIO SYNTHESIZER (WEB AUDIO API)
            ========================================================================== */
         class RetroAudioEngine {
             constructor() {
@@ -563,7 +568,7 @@
                 const gain = this.ctx.createGain();
                 osc.type = 'square';
                 osc.frequency.setValueAtTime(300, this.ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(850, this.ctx.currentTime + 0.1);
+                osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.1);
                 gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
                 gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.1);
                 osc.connect(gain);
@@ -572,19 +577,21 @@
                 osc.stop(this.ctx.currentTime + 0.1);
             }
 
-            playHitSound() {
+            playCorrectSound() {
                 if (!this.ctx) return;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(220, this.ctx.currentTime);
-                osc.frequency.linearRampToValueAtTime(90, this.ctx.currentTime + 0.2);
-                gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
-                gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.2);
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                osc.start();
-                osc.stop(this.ctx.currentTime + 0.2);
+                const notes = [400, 600, 800];
+                notes.forEach((freq, idx) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.08);
+                    gain.gain.setValueAtTime(0.15, this.ctx.currentTime + idx * 0.08);
+                    gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + (idx + 1) * 0.08);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(this.ctx.currentTime + idx * 0.08);
+                    osc.stop(this.ctx.currentTime + (idx + 1) * 0.08);
+                });
             }
 
             playWrongSound() {
@@ -592,8 +599,8 @@
                 const osc = this.ctx.createOscillator();
                 const gain = this.ctx.createGain();
                 osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(150, this.ctx.currentTime);
-                osc.frequency.setValueAtTime(100, this.ctx.currentTime + 0.1);
+                osc.frequency.setValueAtTime(200, this.ctx.currentTime);
+                osc.frequency.linearRampToValueAtTime(90, this.ctx.currentTime + 0.25);
                 gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
                 gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.25);
                 osc.connect(gain);
@@ -604,7 +611,7 @@
 
             playGameOverSound() {
                 if (!this.ctx) return;
-                const notes = [280, 230, 180, 130];
+                const notes = [280, 220, 170, 120];
                 notes.forEach((freq, idx) => {
                     const osc = this.ctx.createOscillator();
                     const gain = this.ctx.createGain();
@@ -630,7 +637,7 @@
                     osc.type = 'triangle';
                     const freq = melody[this.bgmStep % melody.length];
                     osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-                    gain.gain.setValueAtTime(0.03, this.ctx.currentTime);
+                    gain.gain.setValueAtTime(0.025, this.ctx.currentTime);
                     gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.18);
                     osc.connect(gain);
                     gain.connect(this.ctx.destination);
@@ -656,7 +663,7 @@
         const audio = new RetroAudioEngine();
 
         /* ==========================================================================
-           4. GAME CANVAS ENGINE & LIVES SYSTEM
+           3. GAME STATE & CANVAS ENGINE (WITH 3 LIVES)
            ========================================================================== */
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -686,19 +693,17 @@
         const leaderboardScreen = document.getElementById('leaderboard-screen');
         const playerNameInput = document.getElementById('player-name');
         const finalScoreText = document.getElementById('final-score-text');
-        const quizFeedbackText = document.getElementById('quiz-feedback');
+        const gameoverReason = document.getElementById('gameover-reason');
 
-        // Admin DOM Elements
+        // Admin Elements
         const btnUnlockAdmin = document.getElementById('btn-unlock-admin');
         const adminPanel = document.getElementById('admin-panel');
-        const cfgBinIdInput = document.getElementById('cfg-bin-id');
-        const cfgApiKeyInput = document.getElementById('cfg-api-key');
 
-        // Event Listeners
+        /* Event Listeners */
         document.getElementById('btn-start').addEventListener('click', startGame);
         document.getElementById('btn-replay').addEventListener('click', resetToStartScreen);
-        document.getElementById('btn-show-scores').addEventListener('click', () => fetchAndShowLeaderboard(startScreen));
-        document.getElementById('btn-leaderboard-from-over').addEventListener('click', () => fetchAndShowLeaderboard(gameoverScreen));
+        document.getElementById('btn-show-scores').addEventListener('click', () => showLeaderboard(startScreen));
+        document.getElementById('btn-leaderboard-from-over').addEventListener('click', () => showLeaderboard(gameoverScreen));
         document.getElementById('btn-back-to-start').addEventListener('click', resetToStartScreen);
 
         document.getElementById('toggle-audio').addEventListener('click', () => {
@@ -707,7 +712,7 @@
             document.getElementById('toggle-audio').innerText = active ? "🔊 BGM: ON" : "🔇 BGM: OFF";
         });
 
-        /* Keyboard Controls */
+        /* Direction Key Listeners */
         window.addEventListener('keydown', e => {
             audio.init();
             switch (e.key) {
@@ -726,16 +731,17 @@
             }
         });
 
-        /* Mobile D-Pad Controls */
+        /* D-Pad Buttons */
         document.getElementById('btn-up').addEventListener('click', () => { if (dy === 0) { nextDx = 0; nextDy = -1; } });
         document.getElementById('btn-down').addEventListener('click', () => { if (dy === 0) { nextDx = 0; nextDy = 1; } });
         document.getElementById('btn-left').addEventListener('click', () => { if (dx === 0) { nextDx = -1; nextDy = 0; } });
         document.getElementById('btn-right').addEventListener('click', () => { if (dx === 0) { nextDx = 1; nextDy = 0; } });
 
-        function updateLivesDisplay() {
+        function updateLivesUI() {
             let hearts = "";
-            for (let i = 0; i < lives; i++) hearts += "❤️ ";
-            livesDisplay.innerText = hearts.trim() || "💀";
+            for (let i = 0; i < lives; i++) hearts += "❤️";
+            for (let i = lives; i < 3; i++) hearts += "🖤";
+            livesDisplay.innerText = hearts;
         }
 
         function resetToStartScreen() {
@@ -749,15 +755,24 @@
         }
 
         function drawInitialCanvas() {
-            ctx.fillStyle = '#040508';
+            ctx.fillStyle = '#030407';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            // Draw dummy preview
             ctx.fillStyle = '#39ff14';
             ctx.fillRect(5 * GRID_SIZE, 10 * GRID_SIZE, GRID_SIZE - 2, GRID_SIZE - 2);
             ctx.fillRect(4 * GRID_SIZE, 10 * GRID_SIZE, GRID_SIZE - 2, GRID_SIZE - 2);
             ctx.fillRect(3 * GRID_SIZE, 10 * GRID_SIZE, GRID_SIZE - 2, GRID_SIZE - 2);
             ctx.fillStyle = '#ff0055';
             ctx.fillRect(12 * GRID_SIZE, 10 * GRID_SIZE, GRID_SIZE - 2, GRID_SIZE - 2);
+        }
+
+        function respawnSnake() {
+            snake = [
+                { x: 5, y: 10 },
+                { x: 4, y: 10 },
+                { x: 3, y: 10 }
+            ];
+            dx = 1; dy = 0;
+            nextDx = 1; nextDy = 0;
         }
 
         function startGame() {
@@ -769,7 +784,7 @@
             score = 0;
             lives = 3;
             scoreDisplay.innerText = score;
-            updateLivesDisplay();
+            updateLivesUI();
 
             respawnSnake();
             spawnFood();
@@ -781,17 +796,7 @@
 
             isPausedForQuiz = false;
             if (gameInterval) clearInterval(gameInterval);
-            gameInterval = setInterval(gameLoop, 130);
-        }
-
-        function respawnSnake() {
-            snake = [
-                { x: 10, y: 10 },
-                { x: 9, y: 10 },
-                { x: 8, y: 10 }
-            ];
-            dx = 1; dy = 0;
-            nextDx = 1; nextDy = 0;
+            gameInterval = setInterval(gameLoop, 140);
         }
 
         function spawnFood() {
@@ -805,18 +810,6 @@
             }
         }
 
-        function handleCollisionLoss(reason) {
-            audio.playHitSound();
-            lives--;
-            updateLivesDisplay();
-
-            if (lives <= 0) {
-                handleGameOver(reason);
-            } else {
-                respawnSnake();
-            }
-        }
-
         function gameLoop() {
             if (isPausedForQuiz) return;
 
@@ -825,21 +818,21 @@
 
             const head = { x: snake[0].x + dx, y: snake[0].y + dy };
 
-            // Wall Collision Check (Deduct Life)
+            // Wall Collision Check -> Deduct Life & Respawn
             if (head.x < 0 || head.x >= TILE_COUNT || head.y < 0 || head.y >= TILE_COUNT) {
-                return handleCollisionLoss("Ular melanggar sempadan dinding!");
+                return deductLife("Ular melanggar sempadan!");
             }
 
-            // Self Collision Check (Deduct Life)
+            // Self Collision Check -> Deduct Life & Respawn
             for (let i = 0; i < snake.length; i++) {
                 if (snake[i].x === head.x && snake[i].y === head.y) {
-                    return handleCollisionLoss("Ular tergigit diri sendiri!");
+                    return deductLife("Ular tergigit diri sendiri!");
                 }
             }
 
             snake.unshift(head);
 
-            // Eat Apple
+            // Eat Apple Trigger -> Open Quiz
             if (head.x === food.x && head.y === food.y) {
                 audio.playEatSound();
                 pauseForQuiz();
@@ -850,11 +843,23 @@
             renderGame();
         }
 
+        function deductLife(reason) {
+            lives--;
+            updateLivesUI();
+            audio.playWrongSound();
+
+            if (lives <= 0) {
+                triggerGameOver(reason);
+            } else {
+                respawnSnake();
+            }
+        }
+
         function renderGame() {
-            ctx.fillStyle = '#040508';
+            ctx.fillStyle = '#030407';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Grid Lines
+            // Subtle Grid
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
             for (let i = 0; i < canvas.width; i += GRID_SIZE) {
                 ctx.beginPath();
@@ -863,27 +868,26 @@
                 ctx.stroke();
             }
 
-            // Food (Glow Apple)
+            // Draw Food
             ctx.fillStyle = '#ff0055';
             ctx.shadowColor = '#ff0055';
             ctx.shadowBlur = 10;
             ctx.fillRect(food.x * GRID_SIZE + 2, food.y * GRID_SIZE + 2, GRID_SIZE - 4, GRID_SIZE - 4);
             ctx.shadowBlur = 0;
 
-            // Snake Body
+            // Draw Snake
             snake.forEach((seg, index) => {
                 if (index === 0) {
                     ctx.fillStyle = '#39ff14';
                     ctx.shadowColor = '#39ff14';
                     ctx.shadowBlur = 8;
                 } else {
-                    ctx.fillStyle = '#1eb800';
+                    ctx.fillStyle = '#22aa0f';
                     ctx.shadowBlur = 0;
                 }
 
                 ctx.fillRect(seg.x * GRID_SIZE + 1, seg.y * GRID_SIZE + 1, GRID_SIZE - 2, GRID_SIZE - 2);
 
-                // Snake Eyes
                 if (index === 0) {
                     ctx.fillStyle = '#000';
                     let eyeX = seg.x * GRID_SIZE + 5;
@@ -896,15 +900,18 @@
         }
 
         /* ==========================================================================
-           5. MORAL QUIZ MECHANIC
+           4. QUIZ MECHANIC WITH RETRO FEEDBACK VIBES
            ========================================================================== */
         function pauseForQuiz() {
             isPausedForQuiz = true;
+
             currentQuestionIndex = Math.floor(Math.random() * moralQuestions.length);
             const qData = moralQuestions[currentQuestionIndex];
 
             document.getElementById('quiz-question').innerText = qData.q;
             const optionsContainer = document.getElementById('quiz-options');
+            const feedbackBanner = document.getElementById('quiz-feedback-banner');
+            feedbackBanner.classList.add('hidden');
             optionsContainer.innerHTML = '';
 
             qData.options.forEach((opt, index) => {
@@ -920,101 +927,79 @@
 
         function handleAnswer(selectedIndex) {
             const qData = moralQuestions[currentQuestionIndex];
-            quizScreen.classList.add('hidden');
+            const feedbackBanner = document.getElementById('quiz-feedback-banner');
 
             if (selectedIndex === qData.answer) {
+                // Correct Answer
+                audio.playCorrectSound();
                 score += 10;
                 scoreDisplay.innerText = score;
-                spawnFood();
-                isPausedForQuiz = false;
-            } else {
-                audio.playWrongSound();
-                lives--;
-                updateLivesDisplay();
+                
+                feedbackBanner.className = 'feedback-banner feedback-correct';
+                feedbackBanner.innerText = '✅ SYABAS! JAWAPAN BETUL (+10 SKOR)';
+                feedbackBanner.classList.remove('hidden');
 
-                if (lives <= 0) {
-                    handleGameOver("Jawapan kurang tepat! Nyawa anda telah habis.");
-                } else {
-                    alert("Jawapan kurang tepat! 1 Nyawa hilang (❤️ -1). Teruskan Wira!");
+                setTimeout(() => {
+                    quizScreen.classList.add('hidden');
                     spawnFood();
                     isPausedForQuiz = false;
-                }
+                }, 800);
+
+            } else {
+                // Incorrect Answer
+                audio.playWrongSound();
+                lives--;
+                updateLivesUI();
+
+                feedbackBanner.className = 'feedback-banner feedback-wrong';
+                feedbackBanner.innerText = '❌ KURANG TEPAT! (-1 NYAWA)';
+                feedbackBanner.classList.remove('hidden');
+
+                setTimeout(() => {
+                    quizScreen.classList.add('hidden');
+                    if (lives <= 0) {
+                        triggerGameOver("Nyawa telah habis akibat soalan moral yang salah!");
+                    } else {
+                        isPausedForQuiz = false;
+                    }
+                }, 1000);
             }
         }
 
-        function handleGameOver(reason) {
+        function triggerGameOver(reason) {
             clearInterval(gameInterval);
             audio.stopBGM();
             audio.playGameOverSound();
 
             finalScoreText.innerText = `Skor Akhir: ${score}`;
-            quizFeedbackText.innerText = reason;
+            gameoverReason.innerText = reason;
             gameoverScreen.classList.remove('hidden');
 
-            saveScoreOnline(playerName, score);
+            saveScoreLocal(playerName, score);
         }
 
         /* ==========================================================================
-           6. JSONBIN.IO GLOBAL LEADERBOARD & PERMANENT DELETE FIX
+           5. LOCAL-ONLY SCOREBOARD ENGINE (NO DEFAULT DATA)
            ========================================================================== */
-        async function fetchOnlineScores() {
-            if (!jsonbinBinId || !jsonbinApiKey) {
-                return JSON.parse(localStorage.getItem('ular_local_scores') || '[]');
-            }
-
-            try {
-                const res = await fetch(`https://api.jsonbin.io/v3/b/${jsonbinBinId}/latest`, {
-                    method: 'GET',
-                    headers: { 'X-Master-Key': jsonbinApiKey }
-                });
-                if (!res.ok) throw new Error("JSONBin fetch error");
-                const data = await res.json();
-                
-                // FIXED: Return whatever JSONBin has, even if it is an empty array []
-                if (Array.isArray(data.record)) {
-                    localStorage.setItem('ular_local_scores', JSON.stringify(data.record));
-                    return data.record;
-                }
-                return [];
-            } catch (err) {
-                console.warn("Falling back to local cached scores:", err);
-                return JSON.parse(localStorage.getItem('ular_local_scores') || '[]');
-            }
+        function getScoresFromStorage() {
+            return JSON.parse(localStorage.getItem('ular_moral_local_scores') || '[]');
         }
 
-        async function saveScoreOnline(name, newScore) {
-            let currentScores = await fetchOnlineScores();
-            currentScores.push({ name: name, score: newScore, date: new Date().toLocaleDateString() });
+        function saveScoreLocal(name, newScore) {
+            let scores = getScoresFromStorage();
+            scores.push({ name: name, score: newScore, date: new Date().toLocaleDateString() });
 
-            currentScores.sort((a, b) => b.score - a.score);
-            currentScores = currentScores.slice(0, 15);
+            scores.sort((a, b) => b.score - a.score);
+            scores = scores.slice(0, 10);
 
-            localStorage.setItem('ular_local_scores', JSON.stringify(currentScores));
-
-            if (!jsonbinBinId || !jsonbinApiKey) return;
-
-            try {
-                await fetch(`https://api.jsonbin.io/v3/b/${jsonbinBinId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Master-Key': jsonbinApiKey
-                    },
-                    body: JSON.stringify(currentScores)
-                });
-            } catch (err) {
-                console.error("Cloud save failed:", err);
-            }
+            localStorage.setItem('ular_moral_local_scores', JSON.stringify(scores));
         }
 
-        async function fetchAndShowLeaderboard(previousScreen) {
+        function showLeaderboard(previousScreen) {
             if (previousScreen) previousScreen.classList.add('hidden');
             leaderboardScreen.classList.remove('hidden');
 
-            const tbody = document.getElementById('leaderboard-body');
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">MEMUATKAN...</td></tr>';
-
-            const scores = await fetchOnlineScores();
+            const scores = getScoresFromStorage();
             renderScoreTable(scores);
         }
 
@@ -1022,8 +1007,8 @@
             const tbody = document.getElementById('leaderboard-body');
             tbody.innerHTML = '';
 
-            if (!scores || scores.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#888;">Papan skor kosong.</td></tr>';
+            if (scores.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Tiada rekod lagi.</td></tr>';
                 return;
             }
 
@@ -1039,11 +1024,6 @@
                 `;
                 tbody.appendChild(tr);
             });
-
-            document.querySelectorAll('.admin-col').forEach(el => {
-                if (isAdminLoggedIn) el.classList.remove('hidden');
-                else el.classList.add('hidden');
-            });
         }
 
         function escapeHtml(text) {
@@ -1051,94 +1031,40 @@
         }
 
         /* ==========================================================================
-           7. CIKGU ZULAIKHA ADMIN CONTROLS
+           6. CIKGU ZULAIKHA ADMIN CONTROLS
            ========================================================================== */
         btnUnlockAdmin.addEventListener('click', () => {
             const pwd = prompt("Masukkan Kata Laluan Pentadbir Cikgu Zulaikha:");
             if (pwd === "adminzulaikha2026") {
                 isAdminLoggedIn = true;
                 adminPanel.classList.remove('hidden');
-                cfgBinIdInput.value = jsonbinBinId;
-                cfgApiKeyInput.value = jsonbinApiKey;
                 alert("Akses Pentadbir Cikgu Zulaikha Dibenarkan!");
-                fetchAndShowLeaderboard();
+                showLeaderboard();
             } else if (pwd !== null) {
                 alert("Kata laluan salah!");
             }
         });
 
-        async function deleteSingleScore(index) {
+        function deleteSingleScore(index) {
             if (!isAdminLoggedIn) return;
             if (!confirm("Adakah anda pasti mahu memadam skor ini?")) return;
 
-            let currentScores = await fetchOnlineScores();
-            currentScores.splice(index, 1);
+            let scores = getScoresFromStorage();
+            scores.splice(index, 1);
+            localStorage.setItem('ular_moral_local_scores', JSON.stringify(scores));
 
-            // Update Local Cache immediately
-            localStorage.setItem('ular_local_scores', JSON.stringify(currentScores));
-
-            // Sync deleted array to JSONBin Cloud
-            if (jsonbinBinId && jsonbinApiKey) {
-                try {
-                    await fetch(`https://api.jsonbin.io/v3/b/${jsonbinBinId}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Master-Key': jsonbinApiKey
-                        },
-                        body: JSON.stringify(currentScores)
-                    });
-                } catch (e) {
-                    console.error("Gagal memadam dari cloud:", e);
-                }
-            }
-
-            renderScoreTable(currentScores);
+            renderScoreTable(scores);
         }
 
-        document.getElementById('btn-wipe-scores').addEventListener('click', async () => {
+        document.getElementById('btn-wipe-scores').addEventListener('click', () => {
             if (!isAdminLoggedIn) return;
             if (!confirm("AMARAN: Adakah anda pasti mahu memadam KESELURUHAN Papan Skor?")) return;
 
-            const emptyScores = [];
-            localStorage.setItem('ular_local_scores', JSON.stringify(emptyScores));
-
-            if (jsonbinBinId && jsonbinApiKey) {
-                try {
-                    await fetch(`https://api.jsonbin.io/v3/b/${jsonbinBinId}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Master-Key': jsonbinApiKey
-                        },
-                        body: JSON.stringify(emptyScores)
-                    });
-                } catch (e) {
-                    console.error("Gagal mengosongkan cloud:", e);
-                }
-            }
-
-            renderScoreTable(emptyScores);
+            localStorage.setItem('ular_moral_local_scores', JSON.stringify([]));
+            renderScoreTable([]);
             alert("Papan Skor telah dikosongkan sepenuhnya!");
         });
 
-        document.getElementById('btn-save-cloud-config').addEventListener('click', () => {
-            const newBin = cfgBinIdInput.value.trim();
-            const newKey = cfgApiKeyInput.value.trim();
-
-            if (newBin && newKey) {
-                jsonbinBinId = newBin;
-                jsonbinApiKey = newKey;
-                localStorage.setItem("ular_bin_id", newBin);
-                localStorage.setItem("ular_api_key", newKey);
-                alert("Tetapan JSONBin Cloud Berjaya Disimpan!");
-                fetchAndShowLeaderboard();
-            } else {
-                alert("Sila pastikan BIN ID dan API KEY diisi!");
-            }
-        });
-
-        // Initial setup
         drawInitialCanvas();
     </script>
 </body>

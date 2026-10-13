@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ular Wira Moral - Permainan Retro KSSR</title>
-    <!-- Google Fonts for Retro Arcade Aesthetic -->
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0b0c10;
-            --arcade-green: #39ff14;
-            --arcade-yellow: #fffb00;
-            --arcade-red: #ff0055;
-            --arcade-blue: #00dfff;
-            --arcade-purple: #9d00ff;
-            --text-gold: #f4c430;
-            --panel-bg: rgba(15, 15, 26, 0.95);
+            --bg-color: #030611;
+            --arcade-green: #20e3a2;
+            --arcade-cyan: #00f0ff;
+            --arcade-yellow: #ffea00;
+            --arcade-red: #ff2a6d;
+            --arcade-purple: #8a2be2;
+            --panel-bg: rgba(6, 11, 25, 0.96);
+            --card-border: #00f0ff;
         }
 
         * {
@@ -29,9 +29,9 @@
         body {
             background-color: var(--bg-color);
             background-image: 
-                radial-gradient(circle at 50% 50%, #1a1c2e 0%, #050508 100%),
-                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+                radial-gradient(circle at 50% 50%, #0d1531 0%, #02040a 100%),
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
             background-size: 100% 100%, 20px 20px, 20px 20px;
             color: #fff;
             font-family: 'Press Start 2P', cursive;
@@ -44,20 +44,7 @@
             padding: 10px;
         }
 
-        /* Retro CRT Scanline Effect */
-        body::before {
-            content: " ";
-            display: block;
-            position: fixed;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
-            background-size: 100% 4px;
-            z-index: 100;
-            pointer-events: none;
-            opacity: 0.6;
-        }
-
-        /* Top Header Bar */
+        /* Top Header */
         header {
             width: 100%;
             max-width: 480px;
@@ -65,35 +52,29 @@
             justify-content: space-between;
             align-items: center;
             padding: 8px 12px;
-            background: rgba(0, 0, 0, 0.7);
-            border: 2px solid var(--arcade-blue);
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid var(--arcade-cyan);
             border-radius: 8px;
             margin-bottom: 8px;
-            box-shadow: 0 0 10px rgba(0, 223, 255, 0.3);
         }
 
         .header-title {
             font-size: 11px;
             color: var(--arcade-yellow);
-            text-shadow: 2px 2px #000;
         }
 
         .audio-btn {
             background: #111;
-            border: 2px solid var(--arcade-green);
+            border: 1px solid var(--arcade-green);
             color: var(--arcade-green);
-            padding: 6px 10px;
+            padding: 5px 8px;
             font-family: 'Press Start 2P', cursive;
             font-size: 9px;
             cursor: pointer;
             border-radius: 4px;
         }
 
-        .audio-btn:active {
-            transform: scale(0.95);
-        }
-
-        /* Game Main Container */
+        /* Main Container */
         #game-container {
             position: relative;
             width: 100%;
@@ -103,14 +84,13 @@
             align-items: center;
         }
 
-        /* HUD Bar (Score & 3 Lives) */
         .hud {
             width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(0,0,0,0.85);
-            border: 2px solid var(--arcade-purple);
+            background: rgba(0, 0, 0, 0.85);
+            border: 2px solid var(--arcade-cyan);
             border-bottom: none;
             padding: 10px;
             font-size: 10px;
@@ -122,30 +102,23 @@
             color: var(--arcade-green);
         }
 
-        .lives-display {
-            color: var(--arcade-red);
-            font-size: 12px;
-            letter-spacing: 2px;
-        }
-
-        /* Canvas Screen */
         canvas {
-            background-color: #030407;
-            border: 3px solid var(--arcade-purple);
-            box-shadow: 0 0 15px rgba(157, 0, 255, 0.4);
+            background-color: #020307;
+            border: 2px solid var(--arcade-cyan);
             display: block;
             width: 100%;
             aspect-ratio: 1 / 1;
             image-rendering: pixelated;
+            border-radius: 0 0 8px 8px;
         }
 
-        /* Overlays & Modals */
+        /* Overlays */
         .overlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             background: var(--panel-bg);
-            border: 3px solid var(--arcade-blue);
-            border-radius: 8px;
+            border: 2px solid var(--arcade-cyan);
+            border-radius: 12px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -153,9 +126,9 @@
             padding: 20px;
             text-align: center;
             z-index: 20;
-            box-shadow: 0 0 20px rgba(0, 223, 255, 0.5);
             max-height: 100%;
             overflow-y: auto;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.25);
         }
 
         .hidden {
@@ -163,17 +136,16 @@
         }
 
         h1.game-title {
-            font-size: 18px;
-            color: var(--arcade-yellow);
-            margin-bottom: 10px;
-            text-shadow: 3px 3px var(--arcade-red);
-            line-height: 1.4;
+            font-size: 20px;
+            color: var(--arcade-red);
+            margin-bottom: 8px;
+            text-shadow: 2px 2px #000;
         }
 
         p.subtitle {
             font-family: 'VT323', monospace;
-            font-size: 20px;
-            color: var(--arcade-blue);
+            font-size: 18px;
+            color: #aaa;
             margin-bottom: 20px;
         }
 
@@ -200,115 +172,162 @@
             color: #fff;
             text-align: center;
             outline: none;
-            border-radius: 4px;
+            border-radius: 6px;
         }
 
-        /* Retro Arcade Buttons */
+        /* UI Buttons */
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            max-width: 320px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
         .btn {
             background: var(--arcade-green);
             color: #000;
             border: none;
-            padding: 12px 18px;
+            padding: 12px 16px;
             font-family: 'Press Start 2P', cursive;
             font-size: 10px;
             font-weight: bold;
             cursor: pointer;
-            margin: 6px 0;
-            width: 100%;
-            max-width: 260px;
-            border-radius: 4px;
-            box-shadow: 0 4px #009900;
+            border-radius: 8px;
+            flex: 1;
+            box-shadow: 0 4px #0f9d6e;
             transition: all 0.1s;
             text-transform: uppercase;
         }
 
-        .btn:hover {
-            background: var(--arcade-yellow);
-            box-shadow: 0 4px #ccaa00;
+        .btn-blue {
+            background: var(--arcade-cyan);
+            box-shadow: 0 4px #00a0b0;
+        }
+
+        .btn-red {
+            background: var(--arcade-red);
+            color: #fff;
+            box-shadow: 0 4px #b01a4a;
         }
 
         .btn:active {
             transform: translateY(3px);
-            box-shadow: 0 1px #009900;
+            box-shadow: 0 1px #000;
         }
 
-        .btn-secondary {
-            background: var(--arcade-blue);
-            box-shadow: 0 4px #0099cc;
-        }
-
-        .btn-danger {
-            background: var(--arcade-red);
-            color: #fff;
-            box-shadow: 0 4px #990033;
-        }
-
-        /* Quiz Arcade Card */
-        .quiz-card {
-            background: #000;
-            border: 2px solid var(--arcade-yellow);
-            padding: 15px;
-            border-radius: 8px;
+        /* Quiz UI Card (Match Original) */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             width: 100%;
-            box-shadow: 0 0 12px rgba(255, 251, 0, 0.4);
             margin-bottom: 15px;
         }
 
-        .quiz-question {
+        .quiz-title-tag {
+            color: var(--arcade-yellow);
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge-nilai {
+            background: #d81b60;
+            color: #fff;
+            font-family: 'VT323', monospace;
+            font-size: 14px;
+            padding: 2px 10px;
+            border-radius: 12px;
+        }
+
+        .quiz-question-box {
             font-family: 'VT323', monospace;
             font-size: 22px;
             color: #fff;
+            text-align: left;
+            width: 100%;
             margin-bottom: 15px;
             line-height: 1.3;
         }
 
         .quiz-option {
-            background: #121524;
-            border: 2px solid var(--arcade-blue);
-            color: #fff;
-            padding: 12px;
-            margin: 8px 0;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid #1e293b;
+            color: #cbd5e1;
+            padding: 12px 14px;
+            margin: 6px 0;
             width: 100%;
             font-family: 'VT323', monospace;
             font-size: 20px;
             text-align: left;
             cursor: pointer;
-            border-radius: 4px;
+            border-radius: 8px;
             transition: all 0.2s;
+            display: flex;
+            align-items: center;
         }
 
         .quiz-option:hover {
-            background: var(--arcade-purple);
-            border-color: #fff;
+            border-color: var(--arcade-cyan);
+            color: #fff;
+        }
+
+        .quiz-option.selected-correct {
+            background: #1e1b4b;
+            border: 2px solid var(--arcade-purple);
+            color: #fff;
         }
 
         .quiz-option.disabled {
             pointer-events: none;
-            opacity: 0.6;
         }
 
-        /* Feedback Popups for Quiz */
-        .feedback-banner {
-            font-family: 'Press Start 2P', cursive;
-            font-size: 11px;
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 12px;
+        /* Feedback Green Banner */
+        .feedback-card {
+            background: rgba(6, 78, 59, 0.4);
+            border: 2px solid var(--arcade-green);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
             width: 100%;
             text-align: center;
-            line-height: 1.4;
         }
 
-        .feedback-correct {
-            background: rgba(57, 255, 20, 0.2);
-            border: 2px solid var(--arcade-green);
+        .feedback-title {
             color: var(--arcade-green);
+            font-size: 11px;
+            margin-bottom: 6px;
         }
 
-        .feedback-wrong {
-            background: rgba(255, 0, 85, 0.2);
-            border: 2px solid var(--arcade-red);
-            color: var(--arcade-red);
+        .feedback-desc {
+            font-family: 'VT323', monospace;
+            font-size: 18px;
+            color: #e2e8f0;
+            margin-bottom: 10px;
+        }
+
+        /* Stats List on Game Over */
+        .stats-list {
+            font-family: 'VT323', monospace;
+            font-size: 22px;
+            width: 100%;
+            max-width: 300px;
+            margin: 15px 0;
+            text-align: left;
+            color: #cbd5e1;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+        }
+
+        .stats-row span.val {
+            color: var(--arcade-yellow);
         }
 
         /* Leaderboard Table */
@@ -334,27 +353,18 @@
             text-align: left;
         }
 
-        .delete-score-btn {
-            background: transparent;
-            border: none;
-            color: var(--arcade-red);
-            font-size: 16px;
-            cursor: pointer;
-            padding: 0 5px;
-        }
-
         /* Mobile D-Pad Controls */
         #dpad {
             display: grid;
             grid-template-columns: repeat(3, 50px);
             grid-template-rows: repeat(3, 50px);
             gap: 5px;
-            margin-top: 12px;
+            margin-top: 10px;
         }
 
         .dbtn {
-            background: #181d30;
-            border: 2px solid var(--arcade-blue);
+            background: #10172a;
+            border: 2px solid var(--arcade-cyan);
             color: #fff;
             font-size: 18px;
             display: flex;
@@ -366,7 +376,7 @@
         }
 
         .dbtn:active {
-            background: var(--arcade-blue);
+            background: var(--arcade-cyan);
             color: #000;
         }
 
@@ -375,36 +385,24 @@
         #btn-right { grid-column: 3; grid-row: 2; }
         #btn-down { grid-column: 2; grid-row: 3; }
 
-        /* Footer Credits */
+        /* Footer Copyright */
         footer {
-            margin-top: 12px;
+            margin-top: 10px;
             font-size: 8px;
-            color: #777;
+            color: #64748b;
             text-align: center;
             line-height: 1.5;
-            padding: 5px;
         }
 
         footer span {
-            color: var(--text-gold);
-        }
-
-        /* Admin Panel */
-        .admin-panel {
-            background: rgba(0, 0, 0, 0.9);
-            border: 1px dashed var(--arcade-red);
-            padding: 10px;
-            border-radius: 6px;
-            margin-top: 10px;
-            width: 100%;
-            max-width: 300px;
-            font-size: 9px;
+            color: var(--arcade-yellow);
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-    <!-- Header Bar -->
+    <!-- Header -->
     <header>
         <div class="header-title">🐍 ULAR WIRA MORAL</div>
         <button id="toggle-audio" class="audio-btn">🔊 BGM: ON</button>
@@ -413,20 +411,19 @@
     <!-- Game Container -->
     <div id="game-container">
         
-        <!-- HUD Bar with 3 Lives -->
+        <!-- HUD -->
         <div class="hud">
             <div>SKOR: <span id="score-display">0</span></div>
-            <div>NYAWA: <span id="lives-display" class="lives-display">❤️❤️❤️</span></div>
             <div>PEMAIN: <span id="player-display">-</span></div>
         </div>
 
-        <!-- Canvas -->
+        <!-- Canvas Game Screen -->
         <canvas id="gameCanvas" width="400" height="400"></canvas>
 
-        <!-- START SCREEN OVERLAY -->
+        <!-- START SCREEN -->
         <div id="start-screen" class="overlay">
-            <h1 class="game-title">ULAR WIRA<br>MORAL</h1>
-            <p class="subtitle">KSSR Pendidikan Moral (3 Nyawa)</p>
+            <h1 class="game-title" style="color: var(--arcade-yellow);">ULAR WIRA MORAL</h1>
+            <p class="subtitle">KSSR Pendidikan Moral Tahun 1-6</p>
             
             <div class="input-group">
                 <label for="player-name">MASUKKAN NAMA WIRA:</label>
@@ -434,38 +431,57 @@
             </div>
 
             <button id="btn-start" class="btn">MULA MAIN</button>
-            <button id="btn-show-scores" class="btn btn-secondary">PAPAN SKOR</button>
+            <button id="btn-show-scores" class="btn btn-blue" style="margin-top: 8px;">CARTA SKOR</button>
         </div>
 
-        <!-- QUIZ OVERLAY -->
+        <!-- QUIZ OVERLAY (Exact Match with Image 2 & 3) -->
         <div id="quiz-screen" class="overlay hidden">
-            <div class="quiz-card">
-                <p style="font-size: 9px; color: var(--arcade-yellow); margin-bottom: 8px;">SOALAN MORAL KSSR</p>
-                <div id="quiz-question" class="quiz-question">Soalan akan dipaparkan di sini...</div>
+            <div class="quiz-header">
+                <div class="quiz-title-tag">🎓 SOALAN MORAL KSSR</div>
+                <div id="quiz-badge-nilai" class="badge-nilai">Nilai Rasional</div>
             </div>
 
-            <!-- Feedback Banner -->
-            <div id="quiz-feedback-banner" class="feedback-banner hidden"></div>
+            <div id="quiz-question" class="quiz-question-box">Soalan...</div>
 
-            <div id="quiz-options" style="width: 100%; max-width: 320px;"></div>
+            <div id="quiz-options" style="width: 100%;"></div>
 
-            <!-- Continue Button (Hidden until answered) -->
-            <button id="btn-continue-game" class="btn hidden" style="margin-top: 10px; background: var(--arcade-yellow);">TERUSKAN PERMAINAN ➔</button>
+            <!-- Green Feedback Box -->
+            <div id="quiz-feedback-box" class="feedback-card hidden">
+                <div id="feedback-title" class="feedback-title">⚡ TEPAT! +50 SKOR MORAL</div>
+                <div id="feedback-desc" class="feedback-desc">Nilai Rasional membantu kita berfikir berdasarkan alasan dan bukti yang munasabah.</div>
+                <button id="btn-continue-game" class="btn" style="width: 100%; background: var(--arcade-cyan);">TERUSKAN PERMAINAN ►</button>
+            </div>
         </div>
 
-        <!-- GAME OVER OVERLAY -->
+        <!-- GAME OVER OVERLAY (Exact Match with Image 1) -->
         <div id="gameover-screen" class="overlay hidden">
-            <h1 class="game-title" style="color: var(--arcade-red);">TAMAT PERMAINAN!</h1>
-            <p class="subtitle" id="final-score-text">Skor Akhir: 0</p>
-            <p id="gameover-reason" style="font-family: 'VT323'; font-size: 18px; color: var(--arcade-yellow); margin-bottom: 15px;"></p>
-            
-            <button id="btn-replay" class="btn">MAIN LAGI</button>
-            <button id="btn-leaderboard-from-over" class="btn btn-secondary">PAPAN SKOR</button>
+            <h1 class="game-title">TAMAT PERMAINAN</h1>
+            <p class="subtitle">Syabas atas usaha anda menjadi Wira Moral!</p>
+
+            <div class="stats-list">
+                <div class="stats-row">
+                    <div>Pemain:</div>
+                    <div id="go-player-name" class="val">-</div>
+                </div>
+                <div class="stats-row">
+                    <div>Jumlah Skor:</div>
+                    <div id="go-score" class="val">0</div>
+                </div>
+                <div class="stats-row">
+                    <div>Soalan Moral Dijawab Betul:</div>
+                    <div id="go-correct-count" class="val">0</div>
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button id="btn-replay" class="btn">🎮 MAIN LAGI</button>
+                <button id="btn-leaderboard-from-over" class="btn btn-blue">🏆 CARTA SKOR</button>
+            </div>
         </div>
 
         <!-- LEADERBOARD OVERLAY -->
         <div id="leaderboard-screen" class="overlay hidden">
-            <h1 class="game-title" style="font-size: 15px;">🏆 PAPAN SKOR TEMPATAN</h1>
+            <h1 class="game-title" style="color: var(--arcade-yellow); font-size: 16px;">🏆 CARTA SKOR TEMPATAN</h1>
             
             <div style="width: 100%; max-height: 180px; overflow-y: auto;">
                 <table class="leaderboard-table">
@@ -474,24 +490,19 @@
                             <th>#</th>
                             <th>NAMA</th>
                             <th>SKOR</th>
-                            <th class="admin-col hidden">TINDAKAN</th>
+                            <th class="admin-col hidden">PADAM</th>
                         </tr>
                     </thead>
-                    <tbody id="leaderboard-body">
-                        <!-- Score Rows -->
-                    </tbody>
+                    <tbody id="leaderboard-body"></tbody>
                 </table>
             </div>
 
-            <!-- Admin Access -->
             <div id="admin-controls-area">
                 <button id="btn-unlock-admin" style="background: none; border: none; color: #555; font-size: 9px; cursor: pointer; text-decoration: underline; margin-top: 5px;">Akses Cikgu Zulaikha</button>
             </div>
 
-            <!-- Admin Panel -->
-            <div id="admin-panel" class="admin-panel hidden">
-                <p style="color: var(--arcade-yellow); font-weight: bold; margin-bottom: 5px;">KAWALAN PENTADBIR CIKGU ZULAIKHA</p>
-                <button id="btn-wipe-scores" class="btn btn-danger" style="font-size: 8px; padding: 6px;">PADAM SEMUA SKOR</button>
+            <div id="admin-panel" class="hidden" style="margin-top: 10px; width: 100%; max-width: 280px;">
+                <button id="btn-wipe-scores" class="btn btn-red" style="font-size: 8px; padding: 6px;">PADAM SEMUA SKOR</button>
             </div>
 
             <button id="btn-back-to-start" class="btn" style="margin-top: 15px;">KEMBALI</button>
@@ -499,7 +510,7 @@
 
     </div>
 
-    <!-- On-Screen D-Pad -->
+    <!-- D-Pad Mobile Controls -->
     <div id="dpad">
         <div class="dbtn" id="btn-up">▲</div>
         <div class="dbtn" id="btn-left">◄</div>
@@ -509,68 +520,30 @@
 
     <!-- Footer Copyright -->
     <footer>
-        © 2026 Ular Wira Moral | Direka khas oleh <span>Cikgu Zulaikha</span>.<br>Hak Cipta Terpelihara.
+        © 2026 Ular Wira Moral | Direka khas oleh <span>Cikgu Zulaikha</span>. Hak Cipta Terpelihara.<br>Kurikulum Standard Sekolah Rendah (KSSR) Pendidikan Moral
     </footer>
 
-    <!-- Game Logic & Retro Audio Engine -->
+    <!-- Game Script -->
     <script>
-        /* ==========================================================================
-           1. KSSR MORAL QUESTION BANK (30 QUESTIONS)
-           ========================================================================== */
+        /* 1. KSSR QUESTIONS BANK WITH VALUES */
         const moralQuestions = [
-            { q: "Apakah tindakan yang betul apabila jumpa duit di bilik darjah?", options: ["A. Simpan sendiri", "B. Serah kepada guru", "C. Beli gula-gula"], answer: 1 },
-            { q: "Bagaimanakah cara menghormati guru?", options: ["A. Memberi salam", "B. Lari apabila jumpa", "C. Bercakap kasar"], answer: 0 },
-            { q: "Apabila ibu bapa meminta bantuan, kita patut...", options: ["A. Pura-pura tidur", "B. Bantu dengan ikhlas", "C. Marah-marah"], answer: 1 },
-            { q: "Membuang sampah di dalam tong sampah adalah amalan...", options: ["A. Bertanggungjawab", "B. Malas", "C. Membazir"], answer: 0 },
-            { q: "Jika kawan tidak sengaja merosakkan pensel anda, anda harus...", options: ["A. Pukul kawan", "B. Maafkan dia", "C. Rosakkan barang dia"], answer: 1 },
-            { q: "Mengucapkan 'Terima Kasih' selepas menerima bantuan menunjukkan nilai...", options: ["A. Kejujuran", "B. Bekerjasama", "C. Berterima Kasih"], answer: 2 },
-            { q: "Membantu jiran yang memerlukan menunjukkan nilai...", options: ["A. Baik Hati", "B. Sombong", "C. Penakut"], answer: 0 },
-            { q: "Amalan mematuhi peraturan jalan raya adalah amalan...", options: ["A. Berani", "B. Mematuhi Peraturan", "C. Mementingkan diri"], answer: 1 },
-            { q: "Makan makanan berkhasiat adalah contoh menyayangi...", options: ["A. Diri Sendiri", "B. Musuh", "C. Kereta"], answer: 0 },
-            { q: "Sebelum masuk ke bilik guru, kita hendaklah...", options: ["A. Ketuk pintu & minta izin", "B. Main terjah sahaja", "C. Jerit dari luar"], answer: 0 },
-            { q: "Bercakap jujur dan tidak menipu adalah nilai...", options: ["A. Kejujuran", "B. Kerajinan", "C. Keberanian"], answer: 0 },
-            { q: "Sentiasa membuat kerja sekolah tanpa bertangguh adalah nilai...", options: ["A. Kerajinan", "B. Baik Hati", "C. Keadilan"], answer: 0 },
-            { q: "Sikap suka berkongsi makanan dengan kawan yang lapar menunjukkan...", options: ["A. Pemurah", "B. Kedekut", "C. Tamak"], answer: 0 },
-            { q: "Apabila menyanyikan lagu Negaraku, kita perlu...", options: ["A. Berdiri tegak", "B. Berjalan-jalan", "C. Berbual dengan kawan"], answer: 0 },
-            { q: "Menjaga kebersihan persekitaran sekolah adalah tanggungjawab...", options: ["A. Semua warga sekolah", "B. Tukang kebun sahaja", "C. Guru Besar sahaja"], answer: 0 },
-            { q: "Jika kita ternampak kawan terjatuh, tindakan kita ialah...", options: ["A. Membantu dan bertanyakan keadaan", "B. Gelakkan dia", "C. Tangkap gambar"], answer: 0 },
-            { q: "Mengucapkan salam atau selamat pagi kepada jiran menunjukkan sikap...", options: ["A. Ramah dan menghormati", "B. Suka menyibuk", "C. Penakut"], answer: 0 },
-            { q: "Menjaga harta benda sekolah adalah amalan yang...", options: ["A. Terpuji", "B. Merugikan", "C. Membosankan"], answer: 0 },
-            { q: "Beratur semasa membeli makanan di kantin menunjukkan nilai...", options: ["A. Disiplin & Kesabaran", "B. Kelajuan", "C. Kebijaksanaan"], answer: 0 },
-            { q: "Tidak berbuat bising di dalam perpustakaan adalah contoh...", options: ["A. Menghormati orang lain", "B. Takut pada pengawas", "C. Malas bercakap"], answer: 0 },
-            { q: "Apabila berjanji dengan kawan, kita hendaklah...", options: ["A. Menepati janji", "B. Mungkir janji", "C. Lupa janji"], answer: 0 },
-            { q: "Menghormati kepercayaan dan agama kaum lain menunjukkan nilai...", options: ["A. Toleransi", "B. Keberanian", "C. Kerajinan"], answer: 0 },
-            { q: "Setiap pagi, Adam kemas katilnya sendiri. Adam seorang yang...", options: ["A. Mandiri & Bertanggungjawab", "B. Sombong", "C. Pembazir"], answer: 0 },
-            { q: "Menggunakan air dan elektrik secara berhemah adalah sikap...", options: ["A. Penjimatan", "B. Kedekut", "C. Membazir"], answer: 0 },
-            { q: "Mengaku kesalahan apabila melakukan kesilapan menunjukkan...", options: ["A. Keberanian & Kejujuran", "B. Kelemahan", "C. Kesusahan"], answer: 0 },
-            { q: "Sikap bergotong-royong membersihkan kawasan perumahan dapat...", options: ["A. Mengeratkan perpaduan", "B. Menimbulkan pergaduhan", "C. Menyusahkan orang"], answer: 0 },
-            { q: "Menjaga rahsia dan keburukan kawan ialah nilai...", options: ["A. Setia kawan", "B. Pengkhianat", "C. Sombong"], answer: 0 },
-            { q: "Menyediakan jadual waktu belajar di rumah menunjukkan amalan...", options: ["A. Terancang & Disiplin", "B. Membuang masa", "C. Menunjuk-nunjuk"], answer: 0 },
-            { q: "Mengucapkan tahniah atas kejayaan kawan menunjukkan sikap...", options: ["A. Ikut gembira & Tidak dengki", "B. Iri hati", "C. Pura-pura"], answer: 0 },
-            { q: "Sikap bertoleransi semasa bermain permainan kumpulan dapat...", options: ["A. Mengelakkan pergaduhan", "B. Membosankan permainan", "C. Menyebabkan kekalahan"], answer: 0 }
+            { nilai: "Nilai Rasional", q: "Sebelum membuat keputusan yang penting, kita hendaklah...", options: ["A. Mengikut emosi dan perasaan marah", "B. Berfikir tentang kesan baik dan buruknya terlebih dahulu", "C. Mengikut cakap rakan tanpa berfikir", "D. Melakukan tanpa perancangan"], answer: 1, desc: "Nilai Rasional membantu kita berfikir berdasarkan alasan dan bukti yang munasabah." },
+            { nilai: "Nilai Kejujuran", q: "Apakah tindakan yang betul apabila menjumpai wang di bilik darjah?", options: ["A. Simpan sendiri", "B. Serahkan kepada guru bertugas", "C. Beli makanan di kantin", "D. Agak-agak belanja kawan"], answer: 1, desc: "Kejujuran bermaksud bercakap benar dan tidak mengambil barang yang bukan hak kita." },
+            { nilai: "Nilai Hormat", q: "Bagaimanakah cara menunjukkan rasa hormat kepada guru?", options: ["A. Memberi salam apabila bertemu", "B. Lari berpura-pura tidak nampak", "C. Bercakap kasar", "D. Mengendahkan arahan guru"], answer: 0, desc: "Menghormati guru memupuk hubungan yang harmoni di sekolah." },
+            { nilai: "Nilai Bertanggungjawab", q: "Membuang sampah di dalam tong sampah adalah amalan...", options: ["A. Bertanggungjawab", "B. Mementingkan diri", "C. Membazir masa", "D. Suka-suka"], answer: 0, desc: "Menjaga kebersihan persekitaran adalah tanggungjawab bersama." },
+            { nilai: "Nilai Toleransi", q: "Jika kawan tidak sengaja merosakkan pensel anda, anda harus...", options: ["A. Memarahinya di depan ramai", "B. Memaafkan dan berbincang elok-elok", "C. Merosakkan barangnya pula", "D. Memusuhinya"], answer: 1, desc: "Sikap bertoleransi dan memaafkan dapat mengelakkan pergaduhan." }
         ];
 
-        /* ==========================================================================
-           2. RETRO AUDIO SYNTHESIZER (WEB AUDIO API)
-           ========================================================================== */
+        /* 2. AUDIO ENGINE */
         class RetroAudioEngine {
-            constructor() {
-                this.ctx = null;
-                this.bgmEnabled = true;
-                this.bgmTimer = null;
-                this.bgmStep = 0;
-            }
-
+            constructor() { this.ctx = null; this.bgmEnabled = true; this.bgmTimer = null; }
             init() {
                 if (!this.ctx) {
                     const AudioCtx = window.AudioContext || window.webkitAudioContext;
                     this.ctx = new AudioCtx();
                 }
-                if (this.ctx.state === 'suspended') {
-                    this.ctx.resume();
-                }
+                if (this.ctx.state === 'suspended') this.ctx.resume();
             }
-
             playEatSound() {
                 if (!this.ctx) return;
                 const osc = this.ctx.createOscillator();
@@ -580,12 +553,9 @@
                 osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.1);
                 gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
                 gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.1);
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                osc.start();
-                osc.stop(this.ctx.currentTime + 0.1);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + 0.1);
             }
-
             playCorrectSound() {
                 if (!this.ctx) return;
                 const notes = [400, 600, 800];
@@ -596,13 +566,11 @@
                     osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.08);
                     gain.gain.setValueAtTime(0.15, this.ctx.currentTime + idx * 0.08);
                     gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + (idx + 1) * 0.08);
-                    osc.connect(gain);
-                    gain.connect(this.ctx.destination);
+                    osc.connect(gain); gain.connect(this.ctx.destination);
                     osc.start(this.ctx.currentTime + idx * 0.08);
                     osc.stop(this.ctx.currentTime + (idx + 1) * 0.08);
                 });
             }
-
             playWrongSound() {
                 if (!this.ctx) return;
                 const osc = this.ctx.createOscillator();
@@ -612,71 +580,35 @@
                 osc.frequency.linearRampToValueAtTime(90, this.ctx.currentTime + 0.25);
                 gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
                 gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.25);
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                osc.start();
-                osc.stop(this.ctx.currentTime + 0.25);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + 0.25);
             }
-
-            playGameOverSound() {
-                if (!this.ctx) return;
-                const notes = [280, 220, 170, 120];
-                notes.forEach((freq, idx) => {
-                    const osc = this.ctx.createOscillator();
-                    const gain = this.ctx.createGain();
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.12);
-                    gain.gain.setValueAtTime(0.15, this.ctx.currentTime + idx * 0.12);
-                    gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + (idx + 1) * 0.12);
-                    osc.connect(gain);
-                    gain.connect(this.ctx.destination);
-                    osc.start(this.ctx.currentTime + idx * 0.12);
-                    osc.stop(this.ctx.currentTime + (idx + 1) * 0.12);
-                });
-            }
-
             startBGM() {
                 if (this.bgmTimer) return;
                 const melody = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25];
-                this.bgmStep = 0;
+                let step = 0;
                 this.bgmTimer = setInterval(() => {
                     if (!this.bgmEnabled || !this.ctx) return;
                     const osc = this.ctx.createOscillator();
                     const gain = this.ctx.createGain();
                     osc.type = 'triangle';
-                    const freq = melody[this.bgmStep % melody.length];
-                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-                    gain.gain.setValueAtTime(0.025, this.ctx.currentTime);
+                    osc.frequency.setValueAtTime(melody[step % melody.length], this.ctx.currentTime);
+                    gain.gain.setValueAtTime(0.02, this.ctx.currentTime);
                     gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.18);
-                    osc.connect(gain);
-                    gain.connect(this.ctx.destination);
-                    osc.start();
-                    osc.stop(this.ctx.currentTime + 0.18);
-                    this.bgmStep++;
+                    osc.connect(gain); gain.connect(this.ctx.destination);
+                    osc.start(); osc.stop(this.ctx.currentTime + 0.18);
+                    step++;
                 }, 220);
             }
-
-            stopBGM() {
-                if (this.bgmTimer) {
-                    clearInterval(this.bgmTimer);
-                    this.bgmTimer = null;
-                }
-            }
-
-            toggleBGM() {
-                this.bgmEnabled = !this.bgmEnabled;
-                return this.bgmEnabled;
-            }
+            stopBGM() { if (this.bgmTimer) { clearInterval(this.bgmTimer); this.bgmTimer = null; } }
+            toggleBGM() { this.bgmEnabled = !this.bgmEnabled; return this.bgmEnabled; }
         }
 
         const audio = new RetroAudioEngine();
 
-        /* ==========================================================================
-           3. GAME STATE & CANVAS ENGINE (WITH 3 LIVES)
-           ========================================================================== */
+        /* 3. GAME CANVAS STATE */
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-
         const GRID_SIZE = 20;
         const TILE_COUNT = canvas.width / GRID_SIZE;
 
@@ -685,7 +617,7 @@
         let nextDx = 1, nextDy = 0;
         let food = { x: 5, y: 5 };
         let score = 0;
-        let lives = 3;
+        let correctAnswersCount = 0;
         let playerName = "";
         let gameInterval = null;
         let isPausedForQuiz = false;
@@ -694,28 +626,18 @@
 
         // UI DOM Elements
         const scoreDisplay = document.getElementById('score-display');
-        const livesDisplay = document.getElementById('lives-display');
         const playerDisplay = document.getElementById('player-display');
         const startScreen = document.getElementById('start-screen');
         const quizScreen = document.getElementById('quiz-screen');
         const gameoverScreen = document.getElementById('gameover-screen');
         const leaderboardScreen = document.getElementById('leaderboard-screen');
-        const playerNameInput = document.getElementById('player-name');
-        const finalScoreText = document.getElementById('final-score-text');
-        const gameoverReason = document.getElementById('gameover-reason');
-        const btnContinueGame = document.getElementById('btn-continue-game');
 
-        // Admin Elements
-        const btnUnlockAdmin = document.getElementById('btn-unlock-admin');
-        const adminPanel = document.getElementById('admin-panel');
-
-        /* Event Listeners */
         document.getElementById('btn-start').addEventListener('click', startGame);
         document.getElementById('btn-replay').addEventListener('click', resetToStartScreen);
         document.getElementById('btn-show-scores').addEventListener('click', () => showLeaderboard(startScreen));
         document.getElementById('btn-leaderboard-from-over').addEventListener('click', () => showLeaderboard(gameoverScreen));
         document.getElementById('btn-back-to-start').addEventListener('click', resetToStartScreen);
-        btnContinueGame.addEventListener('click', resumeFromQuiz);
+        document.getElementById('btn-continue-game').addEventListener('click', resumeFromQuiz);
 
         document.getElementById('toggle-audio').addEventListener('click', () => {
             audio.init();
@@ -723,37 +645,20 @@
             document.getElementById('toggle-audio').innerText = active ? "🔊 BGM: ON" : "🔇 BGM: OFF";
         });
 
-        /* Direction Key Listeners */
         window.addEventListener('keydown', e => {
             audio.init();
             switch (e.key) {
-                case 'ArrowUp': case 'w': case 'W':
-                    if (dy === 0) { nextDx = 0; nextDy = -1; }
-                    break;
-                case 'ArrowDown': case 's': case 'S':
-                    if (dy === 0) { nextDx = 0; nextDy = 1; }
-                    break;
-                case 'ArrowLeft': case 'a': case 'A':
-                    if (dx === 0) { nextDx = -1; nextDy = 0; }
-                    break;
-                case 'ArrowRight': case 'd': case 'D':
-                    if (dx === 0) { nextDx = 1; nextDy = 0; }
-                    break;
+                case 'ArrowUp': case 'w': case 'W': if (dy === 0) { nextDx = 0; nextDy = -1; } break;
+                case 'ArrowDown': case 's': case 'S': if (dy === 0) { nextDx = 0; nextDy = 1; } break;
+                case 'ArrowLeft': case 'a': case 'A': if (dx === 0) { nextDx = -1; nextDy = 0; } break;
+                case 'ArrowRight': case 'd': case 'D': if (dx === 0) { nextDx = 1; nextDy = 0; } break;
             }
         });
 
-        /* D-Pad Buttons */
         document.getElementById('btn-up').addEventListener('click', () => { if (dy === 0) { nextDx = 0; nextDy = -1; } });
-        document.getElementById('btn-down').addEventListener('click', () => { if (dx === 0) { nextDx = 0; nextDy = 1; } });
+        document.getElementById('btn-down').addEventListener('click', () => { if (dy === 0) { nextDx = 0; nextDy = 1; } });
         document.getElementById('btn-left').addEventListener('click', () => { if (dx === 0) { nextDx = -1; nextDy = 0; } });
         document.getElementById('btn-right').addEventListener('click', () => { if (dx === 0) { nextDx = 1; nextDy = 0; } });
-
-        function updateLivesUI() {
-            let hearts = "";
-            for (let i = 0; i < lives; i++) hearts += "❤️";
-            for (let i = lives; i < 3; i++) hearts += "🖤";
-            livesDisplay.innerText = hearts;
-        }
 
         function resetToStartScreen() {
             clearInterval(gameInterval);
@@ -766,17 +671,26 @@
         }
 
         function drawInitialCanvas() {
-            ctx.fillStyle = '#030407';
+            ctx.fillStyle = '#020307';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#39ff14';
+            ctx.fillStyle = '#20e3a2';
             ctx.fillRect(5 * GRID_SIZE, 10 * GRID_SIZE, GRID_SIZE - 2, GRID_SIZE - 2);
             ctx.fillRect(4 * GRID_SIZE, 10 * GRID_SIZE, GRID_SIZE - 2, GRID_SIZE - 2);
             ctx.fillRect(3 * GRID_SIZE, 10 * GRID_SIZE, GRID_SIZE - 2, GRID_SIZE - 2);
-            ctx.fillStyle = '#ff0055';
+            ctx.fillStyle = '#ff2a6d';
             ctx.fillRect(12 * GRID_SIZE, 10 * GRID_SIZE, GRID_SIZE - 2, GRID_SIZE - 2);
         }
 
-        function respawnSnake() {
+        function startGame() {
+            audio.init();
+            audio.startBGM();
+
+            playerName = document.getElementById('player-name').value.trim() || "Wira Moral";
+            playerDisplay.innerText = playerName;
+            score = 0;
+            correctAnswersCount = 0;
+            scoreDisplay.innerText = score;
+
             snake = [
                 { x: 5, y: 10 },
                 { x: 4, y: 10 },
@@ -784,20 +698,7 @@
             ];
             dx = 1; dy = 0;
             nextDx = 1; nextDy = 0;
-        }
 
-        function startGame() {
-            audio.init();
-            audio.startBGM();
-
-            playerName = playerNameInput.value.trim() || "Wira Moral";
-            playerDisplay.innerText = playerName;
-            score = 0;
-            lives = 3;
-            scoreDisplay.innerText = score;
-            updateLivesUI();
-
-            respawnSnake();
             spawnFood();
 
             startScreen.classList.add('hidden');
@@ -814,36 +715,23 @@
             food.x = Math.floor(Math.random() * TILE_COUNT);
             food.y = Math.floor(Math.random() * TILE_COUNT);
             for (let seg of snake) {
-                if (seg.x === food.x && seg.y === food.y) {
-                    spawnFood();
-                    break;
-                }
+                if (seg.x === food.x && seg.y === food.y) { spawnFood(); break; }
             }
         }
 
         function gameLoop() {
             if (isPausedForQuiz) return;
 
-            dx = nextDx;
-            dy = nextDy;
-
+            dx = nextDx; dy = nextDy;
             const head = { x: snake[0].x + dx, y: snake[0].y + dy };
 
-            // Wall Collision Check -> Deduct Life & Respawn
-            if (head.x < 0 || head.x >= TILE_COUNT || head.y < 0 || head.y >= TILE_COUNT) {
-                return deductLife("Ular melanggar sempadan!");
-            }
-
-            // Self Collision Check -> Deduct Life & Respawn
+            if (head.x < 0 || head.x >= TILE_COUNT || head.y < 0 || head.y >= TILE_COUNT) return triggerGameOver();
             for (let i = 0; i < snake.length; i++) {
-                if (snake[i].x === head.x && snake[i].y === head.y) {
-                    return deductLife("Ular tergigit diri sendiri!");
-                }
+                if (snake[i].x === head.x && snake[i].y === head.y) return triggerGameOver();
             }
 
             snake.unshift(head);
 
-            // Eat Apple Trigger -> Open Quiz
             if (head.x === food.x && head.y === food.y) {
                 audio.playEatSound();
                 pauseForQuiz();
@@ -854,24 +742,11 @@
             renderGame();
         }
 
-        function deductLife(reason) {
-            lives--;
-            updateLivesUI();
-            audio.playWrongSound();
-
-            if (lives <= 0) {
-                triggerGameOver(reason);
-            } else {
-                respawnSnake();
-            }
-        }
-
         function renderGame() {
-            ctx.fillStyle = '#030407';
+            ctx.fillStyle = '#020307';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Subtle Grid
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.02)';
             for (let i = 0; i < canvas.width; i += GRID_SIZE) {
                 ctx.beginPath();
                 ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height);
@@ -879,91 +754,68 @@
                 ctx.stroke();
             }
 
-            // Draw Food
-            ctx.fillStyle = '#ff0055';
-            ctx.shadowColor = '#ff0055';
-            ctx.shadowBlur = 10;
+            ctx.fillStyle = '#ff2a6d';
             ctx.fillRect(food.x * GRID_SIZE + 2, food.y * GRID_SIZE + 2, GRID_SIZE - 4, GRID_SIZE - 4);
-            ctx.shadowBlur = 0;
 
-            // Draw Snake
             snake.forEach((seg, index) => {
-                if (index === 0) {
-                    ctx.fillStyle = '#39ff14';
-                    ctx.shadowColor = '#39ff14';
-                    ctx.shadowBlur = 8;
-                } else {
-                    ctx.fillStyle = '#22aa0f';
-                    ctx.shadowBlur = 0;
-                }
-
+                ctx.fillStyle = (index === 0) ? '#20e3a2' : '#0e9f6e';
                 ctx.fillRect(seg.x * GRID_SIZE + 1, seg.y * GRID_SIZE + 1, GRID_SIZE - 2, GRID_SIZE - 2);
-
-                if (index === 0) {
-                    ctx.fillStyle = '#000';
-                    let eyeX = seg.x * GRID_SIZE + 5;
-                    let eyeY = seg.y * GRID_SIZE + 5;
-                    if (dx === 1) eyeX += 8;
-                    if (dy === 1) eyeY += 8;
-                    ctx.fillRect(eyeX, eyeY, 4, 4);
-                }
             });
         }
 
-        /* ==========================================================================
-           4. QUIZ MECHANIC WITH MANUAL "TERUSKAN PERMAINAN" BUTTON
-           ========================================================================== */
+        /* 4. QUIZ LOGIC MATCHING ORIGINAL UI */
         function pauseForQuiz() {
             isPausedForQuiz = true;
 
             currentQuestionIndex = Math.floor(Math.random() * moralQuestions.length);
             const qData = moralQuestions[currentQuestionIndex];
 
+            document.getElementById('quiz-badge-nilai').innerText = qData.nilai;
             document.getElementById('quiz-question').innerText = qData.q;
+
             const optionsContainer = document.getElementById('quiz-options');
-            const feedbackBanner = document.getElementById('quiz-feedback-banner');
-            
-            feedbackBanner.classList.add('hidden');
-            btnContinueGame.classList.add('hidden');
+            const feedbackBox = document.getElementById('quiz-feedback-box');
+
+            feedbackBox.classList.add('hidden');
             optionsContainer.innerHTML = '';
 
             qData.options.forEach((opt, index) => {
-                const btn = document.createElement('button');
+                const btn = document.createElement('div');
                 btn.className = 'quiz-option';
                 btn.innerText = opt;
-                btn.onclick = () => handleAnswer(index);
+                btn.onclick = () => handleAnswer(index, btn);
                 optionsContainer.appendChild(btn);
             });
 
             quizScreen.classList.remove('hidden');
         }
 
-        function handleAnswer(selectedIndex) {
+        function handleAnswer(selectedIndex, selectedBtn) {
             const qData = moralQuestions[currentQuestionIndex];
-            const feedbackBanner = document.getElementById('quiz-feedback-banner');
-            const optionBtns = document.querySelectorAll('.quiz-option');
+            const feedbackBox = document.getElementById('quiz-feedback-box');
+            const feedbackTitle = document.getElementById('feedback-title');
+            const feedbackDesc = document.getElementById('feedback-desc');
+            const allOptions = document.querySelectorAll('.quiz-option');
 
-            // Disable option buttons after picking
-            optionBtns.forEach(btn => btn.classList.add('disabled'));
+            allOptions.forEach(opt => opt.classList.add('disabled'));
+            selectedBtn.classList.add('selected-correct');
 
             if (selectedIndex === qData.answer) {
-                // Correct Answer -> +10 Score
                 audio.playCorrectSound();
-                score += 10;
+                score += 50;
+                correctAnswersCount++;
                 scoreDisplay.innerText = score;
-                
-                feedbackBanner.className = 'feedback-banner feedback-correct';
-                feedbackBanner.innerText = '✅ TEPAT SEKALI! (+10 SKOR)';
+
+                feedbackTitle.innerText = "⚡ TEPAT! +50 SKOR MORAL";
+                feedbackTitle.style.color = "var(--arcade-green)";
             } else {
-                // Incorrect Answer -> No Life Loss! Just no score gain.
                 audio.playWrongSound();
-                const correctText = qData.options[qData.answer];
-                feedbackBanner.className = 'feedback-banner feedback-wrong';
-                feedbackBanner.innerText = `❌ KURANG TEPAT!\nJawapan betul: ${correctText}`;
+                feedbackTitle.innerText = "❌ KURANG TEPAT!";
+                feedbackTitle.style.color = "var(--arcade-red)";
             }
 
-            feedbackBanner.classList.remove('hidden');
-            btnContinueGame.classList.remove('hidden');
+            feedbackDesc.innerText = qData.desc;
+            feedbackBox.classList.remove('hidden');
         }
 
         function resumeFromQuiz() {
@@ -972,41 +824,35 @@
             isPausedForQuiz = false;
         }
 
-        function triggerGameOver(reason) {
+        function triggerGameOver() {
             clearInterval(gameInterval);
             audio.stopBGM();
-            audio.playGameOverSound();
 
-            finalScoreText.innerText = `Skor Akhir: ${score}`;
-            gameoverReason.innerText = reason;
+            document.getElementById('go-player-name').innerText = playerName;
+            document.getElementById('go-score').innerText = score;
+            document.getElementById('go-correct-count').innerText = correctAnswersCount;
+
             gameoverScreen.classList.remove('hidden');
-
             saveScoreLocal(playerName, score);
         }
 
-        /* ==========================================================================
-           5. LOCAL-ONLY SCOREBOARD ENGINE (NO DEFAULT DATA)
-           ========================================================================== */
+        /* 5. LOCAL SCOREBOARD ENGINE */
         function getScoresFromStorage() {
             return JSON.parse(localStorage.getItem('ular_moral_local_scores') || '[]');
         }
 
         function saveScoreLocal(name, newScore) {
             let scores = getScoresFromStorage();
-            scores.push({ name: name, score: newScore, date: new Date().toLocaleDateString() });
-
+            scores.push({ name: name, score: newScore });
             scores.sort((a, b) => b.score - a.score);
             scores = scores.slice(0, 10);
-
             localStorage.setItem('ular_moral_local_scores', JSON.stringify(scores));
         }
 
         function showLeaderboard(previousScreen) {
             if (previousScreen) previousScreen.classList.add('hidden');
             leaderboardScreen.classList.remove('hidden');
-
-            const scores = getScoresFromStorage();
-            renderScoreTable(scores);
+            renderScoreTable(getScoresFromStorage());
         }
 
         function renderScoreTable(scores) {
@@ -1025,7 +871,7 @@
                     <td>${escapeHtml(entry.name)}</td>
                     <td>${entry.score}</td>
                     <td class="admin-col ${isAdminLoggedIn ? '' : 'hidden'}">
-                        <button class="delete-score-btn" onclick="deleteSingleScore(${idx})">🗑️</button>
+                        <button style="background:none; border:none; color:var(--arcade-red); cursor:pointer;" onclick="deleteSingleScore(${idx})">🗑️</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -1036,15 +882,12 @@
             return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
 
-        /* ==========================================================================
-           6. CIKGU ZULAIKHA ADMIN CONTROLS
-           ========================================================================== */
-        btnUnlockAdmin.addEventListener('click', () => {
+        /* 6. ADMIN CONTROLS */
+        document.getElementById('btn-unlock-admin').addEventListener('click', () => {
             const pwd = prompt("Masukkan Kata Laluan Pentadbir Cikgu Zulaikha:");
             if (pwd === "adminzulaikha2026") {
                 isAdminLoggedIn = true;
-                adminPanel.classList.remove('hidden');
-                alert("Akses Pentadbir Cikgu Zulaikha Dibenarkan!");
+                document.getElementById('admin-panel').classList.remove('hidden');
                 showLeaderboard();
             } else if (pwd !== null) {
                 alert("Kata laluan salah!");
@@ -1053,22 +896,18 @@
 
         function deleteSingleScore(index) {
             if (!isAdminLoggedIn) return;
-            if (!confirm("Adakah anda pasti mahu memadam skor ini?")) return;
-
             let scores = getScoresFromStorage();
             scores.splice(index, 1);
             localStorage.setItem('ular_moral_local_scores', JSON.stringify(scores));
-
             renderScoreTable(scores);
         }
 
         document.getElementById('btn-wipe-scores').addEventListener('click', () => {
             if (!isAdminLoggedIn) return;
-            if (!confirm("AMARAN: Adakah anda pasti mahu memadam KESELURUHAN Papan Skor?")) return;
-
-            localStorage.setItem('ular_moral_local_scores', JSON.stringify([]));
-            renderScoreTable([]);
-            alert("Papan Skor telah dikosongkan sepenuhnya!");
+            if (confirm("Adakah anda pasti mahu memadam KESELURUHAN Papan Skor?")) {
+                localStorage.setItem('ular_moral_local_scores', JSON.stringify([]));
+                renderScoreTable([]);
+            }
         });
 
         drawInitialCanvas();
